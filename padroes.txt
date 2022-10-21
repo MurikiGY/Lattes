@@ -1,0 +1,6 @@
+Arquivo de padroes para lattes.c
+
+return values:
+- 1: Erro de passagem de parametros.
+- 2: Falha de criação da stream de diretório
+- 3: 
