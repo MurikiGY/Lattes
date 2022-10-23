@@ -4,3 +4,9 @@ return values:
 - 1: Erro de passagem de parametros.
 - 2: Falha de criação da stream de diretório
 - 3: 
+
+estrutura de dados:
+- Vetor de curriculos para cada arquivo de curriculo encontrado
+- Cada curriculo tem
+  nome de quem é o curriculo;
+

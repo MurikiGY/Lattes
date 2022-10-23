@@ -6,6 +6,18 @@
 
 #include "utils.h"
 
+struct artigo {
+  char      *nomeArtigo;
+  int       ano;
+};
+typedef struct artigo artigo_t;
+
+struct curriculum {
+  char      *name;
+  artigo_t  *producoes;
+};
+typedef struct curriculum curriculum_t;
+
 //Retorna o numero de arquivos dentro da stream de um diretorio passado como parametro
 int nfiles (DIR *dirstream){
   struct dirent   *entry;     //Estrutura do dirent
