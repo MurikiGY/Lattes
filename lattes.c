@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <getopt.h>
+#include <locale.h>
 
 #include "utils.h"
 
@@ -17,6 +18,32 @@ struct curriculum {
   artigo_t  *producoes;
 };
 typedef struct curriculum curriculum_t;
+
+
+char* ISO8859ToUTF8(unsigned char *str)
+{
+  char* utf8 = (char*) malloc(1 + (2 * strlen(str)));
+
+  int len = 0;
+
+  char *c = utf8;
+  for (; *str; ++str) {
+    if (!(*str & 0x80)) {
+      *c++ = *str;
+      len++;
+    } else {
+      *c++ = (char) (0xc2 | ((unsigned char)(*str) >> 6));
+
+      *c++ = (char) (0xbf & *str);
+      len += 2;
+    }
+  }
+  *c++ = '\0';
+
+
+  return utf8;
+}
+
 
 //Retorna o numero de arquivos dentro da stream de um diretorio passado como parametro
 int nfiles (DIR *dirstream){
@@ -48,9 +75,23 @@ void ledados (DIR *dirstream, char *dir){
       filestream = fopen(path, "r");
       if (filestream){
 
-        char string[200];
-        fscanf(filestream, "%s", &string);
-        printf("String %s lida do arquivo %s\n", string, entry->d_name);
+        //Le dados do arquivo
+
+        unsigned char in[200];
+        unsigned char *out;
+        for (int i=0; i<10000 ;i++){
+
+          fscanf(filestream, "%s", &in);
+
+          out = ISO8859ToUTF8(in);
+
+          printf("%s", out);
+
+          free(out);
+        }
+
+        printf("\n");
+        //Le dados do arquivo
 
       } else
         fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
@@ -63,6 +104,9 @@ void ledados (DIR *dirstream, char *dir){
 
 int main (int argc, char **argv){
   DIR     *dirstream;      //Variavel de stream do diretorio
+  char    *locale;
+
+  locale = setlocale(LC_ALL, "");
 
   //Teste de parametros
   int option;
