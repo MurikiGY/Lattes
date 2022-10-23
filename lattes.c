@@ -6,88 +6,77 @@
 
 #include "utils.h"
 
-//Retorna o numero de caracteres dentro de um arquivo
-//int nchar (char *s){
-//    FILE *filestream;
-//    long int numchar = 0;
-//
-//    filestream = fopen(s, "r");
-//    if (filestream)
-//        while (getc(filestream) != EOF)
-//            numchar++;
-//
-//    fclose(filestream);
-//    return numchar;
-//}
-
-
 //Retorna o numero de arquivos dentro da stream de um diretorio passado como parametro
 int nfiles (DIR *dirstream){
-    struct dirent   *entry;         //Estrutura do dirent
-    int             tam     = 0;    //Contador do numero de arquivos
+  struct dirent   *entry;     //Estrutura do dirent
+  int             tam = 0;    //Contador do numero de arquivos
 
-    //Loop de contagem de arquivos
-    while ( entry = readdir(dirstream) )
-        if (entry->d_type == DT_REG)
-            tam++;
+  //Loop de contagem de arquivos
+  while ( entry = readdir(dirstream) )
+    if (entry->d_type == DT_REG)
+      tam++;
 
-    //Retorna o ponteiro para o inicio do diretorio
-    rewinddir(dirstream);
+  //Retorna o ponteiro para o inicio do diretorio
+  rewinddir(dirstream);
 
-    return tam;
+  return tam;
 }
 
 void ledados (DIR *dirstream, char *dir){
-    struct dirent   *entry;         //Estrutura do dirent dara o dirstream
-    FILE *filestream;               //Stream de acesso a arquivo
+  struct dirent   *entry;         //Estrutura do dirent dara o dirstream
+  FILE            *filestream;    //Stream de acesso a arquivo
 
-    while ( entry = readdir(dir) )
+  while ( entry = readdir(dirstream) )
+    if ( entry->d_type == DT_REG ){
 
-        if ( entry->d_type == DT_REG ){
+      char path[strlen(dir) + strlen(entry->d_name) + 2];
+      snprintf(path, strlen(dir) + strlen(entry->d_name) + 1,
+          "%s\%s", dir, entry->d_name);
 
-            //Concatenar caminho do arquivo dir/file.xml
+      filestream = fopen(path, "r");
+      if (filestream){
 
-            if ( filestream = fopen() ){
+        char string[200];
+        fscanf(filestream, "%s", &string);
+        printf("String %s lida do arquivo %s\n", string, entry->d_name);
 
-            } else
-                fprintf(stderr, "Erro em abrir o arquivo: %s\n", entry->d_name);
+      } else
+        fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
 
-        }
+      fclose(filestream);
+    }
+
 }
 
 
 int main (int argc, char **argv){
-    DIR     *dirstream;                 //Variavel de stream do diretorio
+  DIR     *dirstream;      //Variavel de stream do diretorio
 
-    //Teste de parametros
-    int option;
-    while ( (option = getopt(argc, argv, "d:")) != -1){
-        switch (option){
-            case 'd':
-                break;
-            default:
-                fprintf(stderr, "Passagem incorreta de parametros\n");
-                exit(1);
-        }
+  //Teste de parametros
+  int option;
+  while ( (option = getopt(argc, argv, "d:")) != -1){
+    switch (option){
+      case 'd':
+        break;
+      default:
+        fprintf(stderr, "Passagem incorreta de parametros\n");
+        exit(1);
     }
+  }
 
-    //Abertura da stream do diretorio
-    dirstream = opendir(argv[2]);
-    if (!dirstream){
-        perror("Não foi possivel acessar o diretório\n");
-        exit(2);
-    }
+  //Abertura da stream do diretorio
+  dirstream = opendir(argv[2]);
+  if (!dirstream){
+    perror("Não foi possivel acessar o diretório\n");
+    exit(2);
+  }
 
-    printf("Quantidade de arquivos encontrados: %d\n", nfiles(dirstream));
+  printf("Quantidade de arquivos encontrados: %d\n", nfiles(dirstream));
 
-    //Ate aqui funciona
+  ledados(dirstream, argv[2]);
 
+  //Fechamento da stream
+  closedir(dirstream);
 
-    ledados(dirstream, dir);
-
-
-    //Fechamento da stream
-    closedir(dirstream);
-
-    return 0;
+  return 0;
 }
