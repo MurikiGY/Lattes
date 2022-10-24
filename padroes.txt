@@ -10,3 +10,7 @@ estrutura de dados:
 - Cada curriculo tem
   nome de quem é o curriculo;
 
+
+
+Algoritmo
+

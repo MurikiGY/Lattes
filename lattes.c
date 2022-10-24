@@ -7,6 +7,8 @@
 
 #include "utils.h"
 
+#define STRSIZE 1000
+
 struct artigo {
   char      *nomeArtigo;
   int       ano;
@@ -77,61 +79,85 @@ void ledados (DIR *dirstream, char *dir){
 
         //Le dados do arquivo
 
-        short int chr;
-        while ( (chr = fgetc(filestream)) != EOF )
+        char strng[STRSIZE];
+        while ( fscanf(filestream, "%s", &strng) != EOF ){
 
-          if ( chr == '<' ){
+          //Pegar o titulo do artigo
 
-            unsigned char tag[200];
-            fscanf(filestream, "%s", &tag);
-            if ( tag[0] != '/' )
-//              if ( strcmp(tag, "ARTIGO-PUBLICADO") == 0 )
-                printf("%s\n", tag);
+          //Pegar o ano do artigo
+
+          //Acha o titulo do periodico do artigo
+          if ( strstr(strng, "TITULO-DO-PERIODICO-OU-REVISTA=") ){
+
+            //Pega o resto do conteudo do titulo
+            while ( strng[strlen(strng)-1] != '"' ){
+
+              char aux[STRSIZE];
+              fscanf(filestream, "%s", &aux);
+              strcat(strng, " ");
+              strcat(strng, aux);  //Justa string
+
+            }
+
+            char *aux2 = ISO8859ToUTF8(strng);
+            printf("%s\n", aux2 );
+            free(aux2);
 
           }
+
+          //Pegar o nome dos autores
+
+
+
+
+
+        }
+
 
         //Le dados do arquivo
 
       } else
-          fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
+        fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
 
-        fclose(filestream);
-      }
-
+      fclose(filestream);
     }
 
+}
 
-  int main (int argc, char **argv){
-    DIR     *dirstream;      //Variavel de stream do diretorio
-    char    *locale;
 
-    locale = setlocale(LC_ALL, "");
+int main (int argc, char **argv){
+  DIR     *dirstream;      //Variavel de stream do diretorio
+  char    *locale;
 
-    //Teste de parametros
-    int option;
-    while ( (option = getopt(argc, argv, "d:")) != -1){
-      switch (option){
-        case 'd':
-          break;
-        default:
-          fprintf(stderr, "Passagem incorreta de parametros\n");
-          exit(1);
-      }
+  locale = setlocale(LC_ALL, "");
+
+  //Teste de parametros
+  int option;
+  while ( (option = getopt(argc, argv, "d:")) != -1){
+
+    switch (option){
+      case 'd':
+        break;
+      default:
+        fprintf(stderr, "Passagem incorreta de parametros\n");
+        exit(1);
     }
 
-    //Abertura da stream do diretorio
-    dirstream = opendir(argv[2]);
-    if (!dirstream){
-      perror("Não foi possivel acessar o diretório\n");
-      exit(2);
-    }
-
-    printf("Quantidade de arquivos encontrados: %d\n", nfiles(dirstream));
-
-    ledados(dirstream, argv[2]);
-
-    //Fechamento da stream
-    closedir(dirstream);
-
-    return 0;
   }
+
+  //Abertura da stream do diretorio
+  dirstream = opendir(argv[2]);
+  if (!dirstream){
+    perror("Não foi possivel acessar o diretório\n");
+    exit(2);
+  }
+
+  printf("Quantidade de arquivos encontrados: %d\n", nfiles(dirstream));
+
+  ledados(dirstream, argv[2]);
+
+  //Fechamento da stream
+  closedir(dirstream);
+
+  return 0;
+}
