@@ -77,62 +77,61 @@ void ledados (DIR *dirstream, char *dir){
 
         //Le dados do arquivo
 
-        unsigned char in[200];
-        unsigned char *out;
-        for (int i=0; i<10000 ;i++){
+        short int chr;
+        while ( (chr = fgetc(filestream)) != EOF )
 
-          fscanf(filestream, "%s", &in);
+          if ( chr == '<' ){
 
-          out = ISO8859ToUTF8(in);
+            unsigned char tag[200];
+            fscanf(filestream, "%s", &tag);
+            if ( tag[0] != '/' )
+//              if ( strcmp(tag, "ARTIGO-PUBLICADO") == 0 )
+                printf("%s\n", tag);
 
-          printf("%s", out);
+          }
 
-          free(out);
-        }
-
-        printf("\n");
         //Le dados do arquivo
 
       } else
-        fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
+          fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
 
-      fclose(filestream);
+        fclose(filestream);
+      }
+
     }
 
-}
 
+  int main (int argc, char **argv){
+    DIR     *dirstream;      //Variavel de stream do diretorio
+    char    *locale;
 
-int main (int argc, char **argv){
-  DIR     *dirstream;      //Variavel de stream do diretorio
-  char    *locale;
+    locale = setlocale(LC_ALL, "");
 
-  locale = setlocale(LC_ALL, "");
-
-  //Teste de parametros
-  int option;
-  while ( (option = getopt(argc, argv, "d:")) != -1){
-    switch (option){
-      case 'd':
-        break;
-      default:
-        fprintf(stderr, "Passagem incorreta de parametros\n");
-        exit(1);
+    //Teste de parametros
+    int option;
+    while ( (option = getopt(argc, argv, "d:")) != -1){
+      switch (option){
+        case 'd':
+          break;
+        default:
+          fprintf(stderr, "Passagem incorreta de parametros\n");
+          exit(1);
+      }
     }
+
+    //Abertura da stream do diretorio
+    dirstream = opendir(argv[2]);
+    if (!dirstream){
+      perror("Não foi possivel acessar o diretório\n");
+      exit(2);
+    }
+
+    printf("Quantidade de arquivos encontrados: %d\n", nfiles(dirstream));
+
+    ledados(dirstream, argv[2]);
+
+    //Fechamento da stream
+    closedir(dirstream);
+
+    return 0;
   }
-
-  //Abertura da stream do diretorio
-  dirstream = opendir(argv[2]);
-  if (!dirstream){
-    perror("Não foi possivel acessar o diretório\n");
-    exit(2);
-  }
-
-  printf("Quantidade de arquivos encontrados: %d\n", nfiles(dirstream));
-
-  ledados(dirstream, argv[2]);
-
-  //Fechamento da stream
-  closedir(dirstream);
-
-  return 0;
-}
