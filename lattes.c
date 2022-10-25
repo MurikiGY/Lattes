@@ -67,49 +67,88 @@ void ledados (DIR *dirstream, char *dir){
   struct dirent   *entry;         //Estrutura do dirent dara o dirstream
   FILE            *filestream;    //Stream de acesso a arquivo
 
+  //Iteração sobre o diretorio
   while ( entry = readdir(dirstream) )
     if ( entry->d_type == DT_REG ){
 
       char path[strlen(dir) + strlen(entry->d_name) + 2];
       snprintf(path, strlen(dir) + strlen(entry->d_name) + 1,
-          "%s\%s", dir, entry->d_name);
+               "%s\%s", dir, entry->d_name);
 
+      printf("Lendo arquivo %s\n", entry->d_name);
+
+      //Leitura dos arquivos
       filestream = fopen(path, "r");
       if (filestream){
 
         //Le dados do arquivo
 
+
         char strng[STRSIZE];
         while ( fscanf(filestream, "%s", &strng) != EOF ){
 
-          //Pegar o titulo do artigo
-
-          //Pegar o ano do artigo
-
-          //Acha o titulo do periodico do artigo
-          if ( strstr(strng, "TITULO-DO-PERIODICO-OU-REVISTA=") ){
+          //Chegou em um artigo, salva o titulo
+          if ( strstr(strng, "TITULO-DO-ARTIGO=") ){
+            char *aux2;
 
             //Pega o resto do conteudo do titulo
             while ( strng[strlen(strng)-1] != '"' ){
-
               char aux[STRSIZE];
               fscanf(filestream, "%s", &aux);
               strcat(strng, " ");
-              strcat(strng, aux);  //Justa string
-
+              strcat(strng, aux);  //Concatena titulo completo
             }
-
-            char *aux2 = ISO8859ToUTF8(strng);
+            aux2 = ISO8859ToUTF8(strng);
             printf("%s\n", aux2 );
             free(aux2);
 
+            //Pegar o ano do artigo
+            fscanf(filestream, "%s", &strng);
+            while ( !strstr(strng, "ANO-DO-ARTIGO=") )
+              fscanf(filestream, "%s", &strng);
+            printf("%s\n", strng);
+  
+            //Acha o titulo do periodico do artigo
+            fscanf(filestream, "%s", &strng);
+            while ( !strstr(strng, "TITULO-DO-PERIODICO-OU-REVISTA=") )
+              fscanf(filestream, "%s", &strng);
+ 
+            //Monta string de periodico
+            while ( strng[strlen(strng)-1] != '"' ){
+              char aux[STRSIZE];
+              fscanf(filestream, "%s", &aux);
+              strcat(strng, " ");
+              strcat(strng, aux);
+            }
+            aux2 = ISO8859ToUTF8(strng);
+            printf("%s\n", aux2 );
+            free(aux2);
+
+            //Pegar o nome dos autores
+            fscanf(filestream, "%s", &strng);
+            while ( !strstr(strng, "/></") ){
+
+              //Busca tag de nome do autor
+              if ( strstr(strng, "NOME-COMPLETO-DO-AUTOR=") ){
+
+                //Monta o nome do autor
+                while ( strng[strlen(strng)-1] != '"' ){
+                  char aux[STRSIZE];
+                  fscanf(filestream, "%s", &aux);
+                  strcat(strng, " ");
+                  strcat(strng, aux);
+                }
+                aux2 = ISO8859ToUTF8(strng);
+                printf("%s\n", aux2 );
+                free(aux2);
+
+              }
+
+              fscanf(filestream, "%s", &strng);
+            }
+
+            printf("\n");
           }
-
-          //Pegar o nome dos autores
-
-
-
-
 
         }
 

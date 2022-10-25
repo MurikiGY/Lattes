@@ -13,4 +13,4 @@ estrutura de dados:
 
 
 Algoritmo
-
+Realiza leituras periodicas com fscanf até encontrar o padrão "TITULO-DO-ARTIGO", logo em seguida le o "ANO-DO-ARTIGO", "TITULO-DO-PERIODICO-OU-REVISTA" e por fim o nome dos autores.
