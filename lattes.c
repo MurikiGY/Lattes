@@ -7,8 +7,6 @@
 
 #include "utils.h"
 
-#define STRSIZE 1000
-
 struct artigo {
   char      *nomeArtigo;
   int       ano;
@@ -92,12 +90,7 @@ void ledados (DIR *dirstream, char *dir){
             char *aux2;
 
             //Pega o resto do conteudo do titulo
-            while ( strng[strlen(strng)-1] != '"' ){
-              char aux[STRSIZE];
-              fscanf(filestream, "%s", &aux);
-              strcat(strng, " ");
-              strcat(strng, aux);  //Concatena titulo completo
-            }
+            completaDado(filestream, strng);
             aux2 = ISO8859ToUTF8(strng);
             printf("%s\n", aux2 );
             free(aux2);
@@ -114,12 +107,7 @@ void ledados (DIR *dirstream, char *dir){
               fscanf(filestream, "%s", &strng);
  
             //Monta string de periodico
-            while ( strng[strlen(strng)-1] != '"' ){
-              char aux[STRSIZE];
-              fscanf(filestream, "%s", &aux);
-              strcat(strng, " ");
-              strcat(strng, aux);
-            }
+            completaDado(filestream, strng);
             aux2 = ISO8859ToUTF8(strng);
             printf("%s\n", aux2 );
             free(aux2);
@@ -132,12 +120,7 @@ void ledados (DIR *dirstream, char *dir){
               if ( strstr(strng, "NOME-COMPLETO-DO-AUTOR=") ){
 
                 //Monta o nome do autor
-                while ( strng[strlen(strng)-1] != '"' ){
-                  char aux[STRSIZE];
-                  fscanf(filestream, "%s", &aux);
-                  strcat(strng, " ");
-                  strcat(strng, aux);
-                }
+                completaDado(filestream, strng);
                 aux2 = ISO8859ToUTF8(strng);
                 printf("%s\n", aux2 );
                 free(aux2);
@@ -177,6 +160,11 @@ int main (int argc, char **argv){
     switch (option){
       case 'd':
         break;
+      case 'p':
+        break;
+      case 'c':
+        break;
+
       default:
         fprintf(stderr, "Passagem incorreta de parametros\n");
         exit(1);
