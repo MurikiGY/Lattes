@@ -148,23 +148,30 @@ void ledados (DIR *dirstream, char *dir){
 
 
 int main (int argc, char **argv){
-  DIR     *dirstream;      //Variavel de stream do diretorio
-  char    *locale;
+  DIR     *dirstream;               //Variavel de stream do diretorio
+  char    *locale;                  //Configurar em UTF-8
+  char    periodicos[FILENAME];
+  char    conferencias[FILENAME];
+  char    **periodicVector;         //Vetor de strings com periodicos
+  char    **confVector;             //Vetor de strings com conferencias
+  int log;
+
 
   locale = setlocale(LC_ALL, "");
 
   //Teste de parametros
   int option;
-  while ( (option = getopt(argc, argv, "d:")) != -1){
+  while ( (option = getopt(argc, argv, "d:p:c:")) != -1){
 
     switch (option){
       case 'd':
         break;
       case 'p':
+        strncpy(periodicos, optarg, strlen(optarg));
         break;
       case 'c':
+        strncpy(conferencias, optarg, strlen(optarg));
         break;
-
       default:
         fprintf(stderr, "Passagem incorreta de parametros\n");
         exit(1);
@@ -172,16 +179,36 @@ int main (int argc, char **argv){
 
   }
 
+  if ( strlen(periodicos) < 3 || strlen(conferencias) < 3 ){
+    fprintf(stderr, "falta de argumentos\n");
+    exit(2);
+  }
+
   //Abertura da stream do diretorio
   dirstream = opendir(argv[2]);
   if (!dirstream){
     perror("Não foi possivel acessar o diretório\n");
-    exit(2);
+    exit(3);
   }
+
+  //Inicializa vetor de periodicos
+  log = leStringsArquivo(periodicos, periodicVector);
+  if (log){
+    fprintf(stderr, "Erro na leitura dos periodicos\n");
+    return log;
+  }
+
+  //Inicializa vetor de conferencias
+  log = leStringsArquivo(conferencias, confVector);
+  if (log){
+    fprintf(stderr, "Erro na leitura das conferencias\n");
+    return log;
+  } 
+
 
   printf("Quantidade de arquivos encontrados: %d\n", nfiles(dirstream));
 
-  ledados(dirstream, argv[2]);
+//  ledados(dirstream, argv[2]);
 
   //Fechamento da stream
   closedir(dirstream);

@@ -29,3 +29,40 @@ void completaDado(FILE *stream, char *s){
   }
 }
 
+//Le strings em um arquivo e as retorna em um vetor
+int leStringsArquivo(char *filename, char **vetor){
+  FILE  *filestream;
+  int   count = 0;
+
+  printf("Abrindo arquivo: %s\n", filename);
+
+  filestream = fopen(filename, "r");
+  if (!filestream)
+    return 1;
+
+  char  s[STRSIZE];
+  //Conta quantas linhas tem o arquivo
+  while ( fgets(s, STRSIZE, filestream) )
+    count++;
+
+  printf("Foram encontrados %d linhas em %s\n", count, filename);
+
+  rewind(filestream);
+
+  fclose(filestream);
+
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

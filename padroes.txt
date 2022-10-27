@@ -1,9 +1,10 @@
 Arquivo de padroes para lattes.c
 
 return values:
-- 1: Erro de passagem de parametros.
-- 2: Falha de criação da stream de diretório
-- 3: 
+- 1: Erro nos argumentos dos parametros
+- 2: Erro na passagem de argumentos (periodicos ou conferencias em NULL)
+- 3: Falha de criação da stream de diretório
+- : 
 
 estrutura de dados:
 - Vetor de curriculos para cada arquivo de curriculo encontrado
