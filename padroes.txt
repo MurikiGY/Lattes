@@ -2,8 +2,7 @@ Arquivo de padroes para lattes.c
 
 return values:
 - 1: Erro nos argumentos dos parametros
-- 2: Erro na passagem de argumentos (periodicos ou conferencias em NULL)
-- 3: Falha de criação da stream de diretório
+- 2: Falha de criação da stream de diretório
 - : 
 
 estrutura de dados:

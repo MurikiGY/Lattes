@@ -154,7 +154,9 @@ int main (int argc, char **argv){
   char    conferencias[FILENAME];
   char    **periodicVector;         //Vetor de strings com periodicos
   char    **confVector;             //Vetor de strings com conferencias
-  int log;
+  int     tamPeriodicos;             //Tamanho do vetor de periodicos
+  int     tamConferencias;           //Tamanho do vetor de conferencias
+  int     log;
 
 
   locale = setlocale(LC_ALL, "");
@@ -167,10 +169,10 @@ int main (int argc, char **argv){
       case 'd':
         break;
       case 'p':
-        strncpy(periodicos, optarg, strlen(optarg));
+        strncpy(periodicos, optarg, FILENAME);
         break;
       case 'c':
-        strncpy(conferencias, optarg, strlen(optarg));
+        strncpy(conferencias, optarg, FILENAME);
         break;
       default:
         fprintf(stderr, "Passagem incorreta de parametros\n");
@@ -179,36 +181,40 @@ int main (int argc, char **argv){
 
   }
 
-  if ( strlen(periodicos) < 3 || strlen(conferencias) < 3 ){
-    fprintf(stderr, "falta de argumentos\n");
-    exit(2);
-  }
-
   //Abertura da stream do diretorio
   dirstream = opendir(argv[2]);
   if (!dirstream){
     perror("Não foi possivel acessar o diretório\n");
-    exit(3);
+    exit(2);
   }
 
   //Inicializa vetor de periodicos
-  log = leStringsArquivo(periodicos, periodicVector);
+  log = leStringsArquivo(periodicos, periodicVector, &tamPeriodicos);
   if (log){
     fprintf(stderr, "Erro na leitura dos periodicos\n");
     return log;
   }
 
   //Inicializa vetor de conferencias
-  log = leStringsArquivo(conferencias, confVector);
+  log = leStringsArquivo(conferencias, confVector, &tamConferencias);
   if (log){
     fprintf(stderr, "Erro na leitura das conferencias\n");
     return log;
-  } 
+  }
 
 
-  printf("Quantidade de arquivos encontrados: %d\n", nfiles(dirstream));
+  for (int i=0; i<tamPeriodicos ;i++)
+    printf("%s", periodicVector[i]);
+
+//  imprimeVetorStrings(periodicVector, tamPeriodicos);
+//  imprimeVetorStrings(confVector, tamConferencias);
 
 //  ledados(dirstream, argv[2]);
+
+
+  //Desaloca vetor de strings
+//  destroiVetorString(periodicVector, tamPeriodicos);
+//  destroiVetorString(confVector, tamConferencias);
 
   //Fechamento da stream
   closedir(dirstream);
