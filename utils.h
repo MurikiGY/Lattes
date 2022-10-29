@@ -1,7 +1,7 @@
 #ifndef _UTILS_
 #define _UTILS_
 
-#define STRSIZE 1000
+#define STRSIZE 512
 #define FILENAME 100
 
 struct classes {

@@ -202,6 +202,10 @@ int main (int argc, char **argv){
     exit(4);
   }
 
+  imprimeVetor(V_periodicos, tam_periodicos);
+  imprimeVetor(V_conferencias, tam_conferencias);
+
+
 //  ledados(dirstream, argv[2]);
 
   //Desaloca vetor de strings

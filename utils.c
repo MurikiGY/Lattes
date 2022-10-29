@@ -45,8 +45,8 @@ classe_t *leStringsArquivo(char *filename, int *tam){
   }
 
   //Conta quantas linhas tem o arquivo
-  char  s[STRSIZE];
-  while ( fgets(s, STRSIZE, filestream) )
+  char  str[STRSIZE];
+  while ( fgets(str, STRSIZE, filestream) )
     count++;
 
   *tam = count;
@@ -54,20 +54,37 @@ classe_t *leStringsArquivo(char *filename, int *tam){
   //Malloc do tamanho do vetor
   vetor = malloc(count * sizeof(classe_t));
   if ( !vetor ){
-    fprintf(stderr, "Falha na alocacao do vetor de strings\n");
+    fprintf(stderr, "Falha na alocacao do vetor de classes\n");
     return NULL;
   }
 
   rewind(filestream);
 
-  int i = 0;
-  while ( fgets(s, STRSIZE, filestream) ){
-    vetor[i].nome = malloc( sizeof(char) * ( strlen(s) + 1 ) );
-    vetor[i].tipo = NULL;
-    strncpy(vetor[i].nome, s, strlen(s) + 1);
-    printf("%s", vetor[i].nome);
+  int i=0;
+  while ( fgets(str, STRSIZE, filestream) ){
+    str[strcspn(str, "\n")] = '\0'; 
+    char *final = strrchr(str, ' ');
+    final[0] = '\0';
+    (final)++;        //str eh o conteudo e final eh o tipo
+    vetor[i].nome = malloc( sizeof(char) * (strlen(str)+1));
+    strncpy(vetor[i].nome, str, strlen(str)+1);
+    vetor[i].tipo = malloc( sizeof(char) * (strlen(final)+1));
+    strncpy(vetor[i].tipo, final, strlen(final)+1);
     i++;
   }
+    
+
+
+
+
+//  int i = 0;
+//  while ( fgets(s, STRSIZE, filestream) ){
+//    vetor[i].nome = malloc( sizeof(char) * ( strlen(s) + 1 ) );
+//    vetor[i].tipo = NULL;
+//    strncpy(vetor[i].nome, s, strlen(s) + 1);
+//    printf("%s", vetor[i].nome);
+//    i++;
+//  }
 
   fclose(filestream);
 
@@ -78,8 +95,10 @@ classe_t *leStringsArquivo(char *filename, int *tam){
 //Desaloca um vetor de strings
 void destroiVetor(classe_t *vetor, int tam){
 
-  for (int i=0; i<tam ;i++)
+  for (int i=0; i<tam ;i++){
     free(vetor[i].nome);
+    free(vetor[i].tipo);
+  }
 
   free(vetor);
 }
@@ -87,8 +106,11 @@ void destroiVetor(classe_t *vetor, int tam){
 
 void imprimeVetor(classe_t *vetor, int tam){
   
-  for (int i=0; i<tam ;i++)
-    printf("%s", vetor[i].nome);
+  for (int i=0; i<tam ;i++){
+    printf("%s\n", vetor[i].nome);
+    printf("%s\n", vetor[i].tipo);
+  }
+
 
 }
 
