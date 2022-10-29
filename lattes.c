@@ -148,15 +148,14 @@ void ledados (DIR *dirstream, char *dir){
 
 
 int main (int argc, char **argv){
-  DIR     *dirstream;               //Variavel de stream do diretorio
-  char    *locale;                  //Configurar em UTF-8
-  char    periodicos[FILENAME];
-  char    conferencias[FILENAME];
-  char    **periodicVector;         //Vetor de strings com periodicos
-  char    **confVector;             //Vetor de strings com conferencias
-  int     tamPeriodicos;             //Tamanho do vetor de periodicos
-  int     tamConferencias;           //Tamanho do vetor de conferencias
-  int     log;
+  DIR       *dirstream;               //Variavel de stream do diretorio
+  char      *locale;                  //Configurar em UTF-8
+  char      periodicos[FILENAME];     //Nome do arquivo de periodicos
+  char      conferencias[FILENAME];   //Nome do arquivo de conferencias
+  classe_t  *V_periodicos;            //Vetor de classes periodicos
+  classe_t  *V_conferencias;          //Vetor de classes conferencias
+  int       tam_periodicos;           //Tamanho do vetor de periodicos
+  int       tam_conferencias;         //Tamanho do vetor de conferencias
 
 
   locale = setlocale(LC_ALL, "");
@@ -189,32 +188,25 @@ int main (int argc, char **argv){
   }
 
   //Inicializa vetor de periodicos
-  log = leStringsArquivo(periodicos, periodicVector, &tamPeriodicos);
-  if (log){
+  V_periodicos = leStringsArquivo(periodicos, &tam_periodicos);
+  if (!V_periodicos){
     fprintf(stderr, "Erro na leitura dos periodicos\n");
-    return log;
+    exit(3);
   }
 
   //Inicializa vetor de conferencias
-  log = leStringsArquivo(conferencias, confVector, &tamConferencias);
-  if (log){
+  V_conferencias = leStringsArquivo(conferencias, &tam_conferencias);
+  if (!V_conferencias){
     fprintf(stderr, "Erro na leitura das conferencias\n");
-    return log;
+    destroiVetor(V_periodicos, tam_periodicos);
+    exit(4);
   }
-
-
-  for (int i=0; i<tamPeriodicos ;i++)
-    printf("%s", periodicVector[i]);
-
-//  imprimeVetorStrings(periodicVector, tamPeriodicos);
-//  imprimeVetorStrings(confVector, tamConferencias);
 
 //  ledados(dirstream, argv[2]);
 
-
   //Desaloca vetor de strings
-//  destroiVetorString(periodicVector, tamPeriodicos);
-//  destroiVetorString(confVector, tamConferencias);
+  destroiVetor(V_periodicos, tam_periodicos);
+  destroiVetor(V_conferencias, tam_conferencias);
 
   //Fechamento da stream
   closedir(dirstream);

@@ -33,68 +33,63 @@ void completaDado(FILE *stream, char *s){
 
 
 //Le strings em um arquivo e as retorna em um vetor
-int leStringsArquivo(char *filename, char **vetor, int *tam){
-  FILE  *filestream;
-  int   count = 0;
-
-  printf("Abrindo arquivo: %s\n", filename);
+classe_t *leStringsArquivo(char *filename, int *tam){
+  FILE      *filestream;
+  classe_t  *vetor;
+  int       count = 0;
 
   filestream = fopen(filename, "r");
   if (!filestream){
     fprintf(stderr, "Falha na abertura da stream %s\n", filename);
-    return 1;
+    return NULL;
   }
 
-  char  s[STRSIZE];
   //Conta quantas linhas tem o arquivo
+  char  s[STRSIZE];
   while ( fgets(s, STRSIZE, filestream) )
     count++;
 
   *tam = count;
-  printf("Foram encontrados %d linhas em %s\n", count, filename);
 
   //Malloc do tamanho do vetor
-  vetor = malloc(count * sizeof(char*));
+  vetor = malloc(count * sizeof(classe_t));
   if ( !vetor ){
     fprintf(stderr, "Falha na alocacao do vetor de strings\n");
-    return 2;
+    return NULL;
   }
 
   rewind(filestream);
 
   int i = 0;
   while ( fgets(s, STRSIZE, filestream) ){
-    vetor[i] = malloc( sizeof(char) * ( strlen(s) + 1 ) );
-    strncpy(vetor[i], s, strlen(s) + 1);
+    vetor[i].nome = malloc( sizeof(char) * ( strlen(s) + 1 ) );
+    vetor[i].tipo = NULL;
+    strncpy(vetor[i].nome, s, strlen(s) + 1);
+    printf("%s", vetor[i].nome);
     i++;
   }
 
   fclose(filestream);
 
-  return 0;
+  return vetor;
 }
 
-//Desaloca um vetor de strings
-void destroiVetorString(char **vetor, int tam){
 
-//  for (int i=0; i<tam ;i++)
-//    free(vetor[i]);
+//Desaloca um vetor de strings
+void destroiVetor(classe_t *vetor, int tam){
+
+  for (int i=0; i<tam ;i++)
+    free(vetor[i].nome);
 
   free(vetor);
 }
 
 
-void imprimeVetorStrings(char **vetor, int tam){
+void imprimeVetor(classe_t *vetor, int tam){
   
   for (int i=0; i<tam ;i++)
-    printf("%s", vetor[i]);
+    printf("%s", vetor[i].nome);
 
 }
-
-
-
-
-
-
 
 

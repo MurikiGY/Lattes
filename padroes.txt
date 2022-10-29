@@ -1,9 +1,14 @@
 Arquivo de padroes para lattes.c
 
+Variaveis:  Snake_case
+funções:    camelCase 
+
+
 return values:
 - 1: Erro nos argumentos dos parametros
 - 2: Falha de criação da stream de diretório
-- : 
+- 3: Falha na criação do vetor de periodicos
+- 4: Falha na criação do vetor de conferencias
 
 estrutura de dados:
 - Vetor de curriculos para cada arquivo de curriculo encontrado
