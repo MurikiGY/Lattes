@@ -14,8 +14,8 @@ struct artigo {
 typedef struct artigo artigo_t;
 
 struct curriculum {
-  char      *name;
-  artigo_t  *producoes;
+  char      *name;        //Nome da pessoa do curriculo
+  artigo_t  *producoes;   //Lista ligada de produções realizadas
 };
 typedef struct curriculum curriculum_t;
 
@@ -202,11 +202,11 @@ int main (int argc, char **argv){
     exit(4);
   }
 
-  imprimeVetor(V_periodicos, tam_periodicos);
-  imprimeVetor(V_conferencias, tam_conferencias);
+  printf("Numero de curriculos: %d\n", nfiles(dirstream));
 
 
-//  ledados(dirstream, argv[2]);
+  //Sumariza curriculos
+  ledados(dirstream, argv[2]);
 
   //Desaloca vetor de strings
   destroiVetor(V_periodicos, tam_periodicos);

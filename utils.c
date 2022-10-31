@@ -5,6 +5,7 @@
 
 #include "utils.h"
 
+
 // Delay de execucao
 void delay(int number_of_seconds){
     //Converting time into milli_seconds
@@ -73,19 +74,6 @@ classe_t *leStringsArquivo(char *filename, int *tam){
     i++;
   }
     
-
-
-
-
-//  int i = 0;
-//  while ( fgets(s, STRSIZE, filestream) ){
-//    vetor[i].nome = malloc( sizeof(char) * ( strlen(s) + 1 ) );
-//    vetor[i].tipo = NULL;
-//    strncpy(vetor[i].nome, s, strlen(s) + 1);
-//    printf("%s", vetor[i].nome);
-//    i++;
-//  }
-
   fclose(filestream);
 
   return vetor;
@@ -110,8 +98,6 @@ void imprimeVetor(classe_t *vetor, int tam){
     printf("%s\n", vetor[i].nome);
     printf("%s\n", vetor[i].tipo);
   }
-
-
 }
 
 
