@@ -19,6 +19,9 @@ void completaDado(FILE *stream, char *s);
 //Le strings em um arquivo e as retorna num vetor de classe
 classe_t *leStringsArquivo(char *filename, int *tam);
 
+//Remove TAG
+char *removeTag(char *s);
+
 //Desaloca vetor de classes
 void destroiVetor(classe_t *vetor, int tam);
 

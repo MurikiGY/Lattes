@@ -80,6 +80,24 @@ classe_t *leStringsArquivo(char *filename, int *tam){
 }
 
 
+//Remove TAG
+char *removeTag(char *s){
+  char *aux;
+
+  //Remove aspas final
+  s[strlen(s)-1] = '\0';
+
+  //Remove tag
+  aux = strchr(s, '"');
+
+  //Desloca um caracter de s
+  (aux)++;
+
+  return aux;
+}
+
+
+
 //Desaloca um vetor de strings
 void destroiVetor(classe_t *vetor, int tam){
 

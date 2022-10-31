@@ -27,7 +27,11 @@ Produções Bibliograficas:
   NOME-DO-EVENTO (conferencia)
   NOME-COMPLETO-DO-AUTOR
 
+- Artigos publicados
+  TITULO-DO-ARTIGO
+  ANO-DO-ARTIGO
+  TITULO-DO-PERIODICO-OU-REVISTA
+  NOME-COMPLETO-DO-AUTOR
 
-- Artigos publicados    - Periodicos
 
 

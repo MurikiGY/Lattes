@@ -20,31 +20,6 @@ struct curriculum {
 typedef struct curriculum curriculum_t;
 
 
-char* ISO8859ToUTF8(unsigned char *str)
-{
-  char* utf8 = (char*) malloc(1 + (2 * strlen(str)));
-
-  int len = 0;
-
-  char *c = utf8;
-  for (; *str; ++str) {
-    if (!(*str & 0x80)) {
-      *c++ = *str;
-      len++;
-    } else {
-      *c++ = (char) (0xc2 | ((unsigned char)(*str) >> 6));
-
-      *c++ = (char) (0xbf & *str);
-      len += 2;
-    }
-  }
-  *c++ = '\0';
-
-
-  return utf8;
-}
-
-
 //Retorna o numero de arquivos dentro da stream de um diretorio passado como parametro
 int nfiles (DIR *dirstream){
   struct dirent   *entry;     //Estrutura do dirent
@@ -71,9 +46,7 @@ void ledados (DIR *dirstream, char *dir){
 
       char path[strlen(dir) + strlen(entry->d_name) + 2];
       snprintf(path, strlen(dir) + strlen(entry->d_name) + 1,
-               "%s\%s", dir, entry->d_name);
-
-      printf("Lendo arquivo %s\n", entry->d_name);
+      "%s\%s", dir, entry->d_name);
 
       //Leitura dos arquivos
       filestream = fopen(path, "r");
@@ -81,19 +54,28 @@ void ledados (DIR *dirstream, char *dir){
 
         //Le dados do arquivo
 
-
         char strng[STRSIZE];
+        //Busca o nome do pesquisador
+        fscanf(filestream, "%s", &strng);
+        while ( !strstr(strng, "NOME-COMPLETO=") )
+          fscanf(filestream, "%s", &strng);
+        completaDado(filestream, strng);
+
+        char *aux;
+        aux = removeTag(strng);
+        printf("Nome do pesquisador: %s\n", aux);
+        free(aux);
+
+
         while ( fscanf(filestream, "%s", &strng) != EOF ){
+
 
           //Chegou em um artigo, salva o titulo
           if ( strstr(strng, "TITULO-DO-ARTIGO=") ){
-            char *aux2;
 
             //Pega o resto do conteudo do titulo
             completaDado(filestream, strng);
-            aux2 = ISO8859ToUTF8(strng);
-            printf("%s\n", aux2 );
-            free(aux2);
+            printf("%s\n", strng );
 
             //Pegar o ano do artigo
             fscanf(filestream, "%s", &strng);
@@ -108,9 +90,7 @@ void ledados (DIR *dirstream, char *dir){
  
             //Monta string de periodico
             completaDado(filestream, strng);
-            aux2 = ISO8859ToUTF8(strng);
-            printf("%s\n", aux2 );
-            free(aux2);
+            printf("%s\n", strng );
 
             //Pegar o nome dos autores
             fscanf(filestream, "%s", &strng);
@@ -118,32 +98,28 @@ void ledados (DIR *dirstream, char *dir){
 
               //Busca tag de nome do autor
               if ( strstr(strng, "NOME-COMPLETO-DO-AUTOR=") ){
-
                 //Monta o nome do autor
                 completaDado(filestream, strng);
-                aux2 = ISO8859ToUTF8(strng);
-                printf("%s\n", aux2 );
-                free(aux2);
-
+                printf("%s\n", strng );
               }
-
               fscanf(filestream, "%s", &strng);
             }
 
             printf("\n");
           }
 
+
         }
 
 
         //Le dados do arquivo
 
+        fclose(filestream);
+
       } else
         fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
 
-      fclose(filestream);
     }
-
 }
 
 
