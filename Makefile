@@ -1,5 +1,5 @@
-CC = gcc
-CCFLAGS = -Wall -g -std=c99     #Flags de compilação
+CC = gcc -g
+CCFLAGS =  -Wall  -std=c99     #Flags de compilação
 LDFLAGS =                       #Blibliotecas a ligar
 SOURCES = $(wildcard *.c)       #Arquivos .c
 OBJECTS = $(SOURCES: .c=.o)     #Arquivos .o

@@ -5,7 +5,8 @@
 #include <getopt.h>
 #include <locale.h>
 
-#include "utils.h"
+#include "leitura.h"
+#include "formata.h"
 
 struct artigo {
   char      *nomeArtigo;
@@ -54,63 +55,27 @@ void ledados (DIR *dirstream, char *dir){
 
         //Le dados do arquivo
 
-        char strng[STRSIZE];
+        char *strng = malloc( sizeof(char) * STRSIZE );
+        
         //Busca o nome do pesquisador
-        fscanf(filestream, "%s", &strng);
+        fscanf(filestream, "%s", strng);
         while ( !strstr(strng, "NOME-COMPLETO=") )
-          fscanf(filestream, "%s", &strng);
-        completaDado(filestream, strng);
+          fscanf(filestream, "%s", strng);
+        pegaDados(filestream, strng);
+        printf("Nome do pesquisador: %s\n", strng );
 
-        char *aux;
-        aux = removeTag(strng);
-        printf("Nome do pesquisador: %s\n", aux);
-        free(aux);
+        while ( fscanf(filestream, "%s", strng) != EOF ){
 
+          //Le evento
+          if ( strstr(strng, "<TRABALHO-EM-EVENTOS") )
+            leEvento(filestream);
 
-        while ( fscanf(filestream, "%s", &strng) != EOF ){
-
-
-          //Chegou em um artigo, salva o titulo
-          if ( strstr(strng, "TITULO-DO-ARTIGO=") ){
-
-            //Pega o resto do conteudo do titulo
-            completaDado(filestream, strng);
-            printf("%s\n", strng );
-
-            //Pegar o ano do artigo
-            fscanf(filestream, "%s", &strng);
-            while ( !strstr(strng, "ANO-DO-ARTIGO=") )
-              fscanf(filestream, "%s", &strng);
-            printf("%s\n", strng);
-  
-            //Acha o titulo do periodico do artigo
-            fscanf(filestream, "%s", &strng);
-            while ( !strstr(strng, "TITULO-DO-PERIODICO-OU-REVISTA=") )
-              fscanf(filestream, "%s", &strng);
- 
-            //Monta string de periodico
-            completaDado(filestream, strng);
-            printf("%s\n", strng );
-
-            //Pegar o nome dos autores
-            fscanf(filestream, "%s", &strng);
-            while ( !strstr(strng, "/></") ){
-
-              //Busca tag de nome do autor
-              if ( strstr(strng, "NOME-COMPLETO-DO-AUTOR=") ){
-                //Monta o nome do autor
-                completaDado(filestream, strng);
-                printf("%s\n", strng );
-              }
-              fscanf(filestream, "%s", &strng);
-            }
-
-            printf("\n");
-          }
-
+          //Le artigo
+          if ( strstr(strng, "<ARTIGO-PUBLICADO") )
+            leArtigo(filestream);
 
         }
-
+        free(strng);
 
         //Le dados do arquivo
 
@@ -124,14 +89,16 @@ void ledados (DIR *dirstream, char *dir){
 
 
 int main (int argc, char **argv){
-  DIR       *dirstream;               //Variavel de stream do diretorio
-  char      *locale;                  //Configurar em UTF-8
-  char      periodicos[FILENAME];     //Nome do arquivo de periodicos
-  char      conferencias[FILENAME];   //Nome do arquivo de conferencias
-  classe_t  *V_periodicos;            //Vetor de classes periodicos
-  classe_t  *V_conferencias;          //Vetor de classes conferencias
-  int       tam_periodicos;           //Tamanho do vetor de periodicos
-  int       tam_conferencias;         //Tamanho do vetor de conferencias
+  DIR         *dirstream;               //Variavel de stream do diretorio
+  char        *locale;                  //Configurar em UTF-8
+  char        periodicos[FILENAME];     //Nome do arquivo de periodicos
+  char        conferencias[FILENAME];   //Nome do arquivo de conferencias
+  classe_t    *V_periodicos;            //Vetor de classes periodicos
+  classe_t    *V_conferencias;          //Vetor de classes conferencias
+  int         tam_periodicos;           //Tamanho do vetor de periodicos
+  int         tam_conferencias;         //Tamanho do vetor de conferencias
+//  curriculo_t *V_pesquisador;             //Vetor de pesquisadores
+//  int         tam_pesquisador;          //Tamanho do vetor de pesquisadores
 
 
   locale = setlocale(LC_ALL, "");
@@ -178,11 +145,19 @@ int main (int argc, char **argv){
     exit(4);
   }
 
-  printf("Numero de curriculos: %d\n", nfiles(dirstream));
-
+//  tam_pesquisador = nfiles(dirstream);
+//  V_pesquisador = malloc( sizeof(curriculo_t) * tam_pesquisador );
+//  if ( !V_pesquisador ){
+//    fprintf(stderr, "Falha de alocacao no vetor de pesquisadores\n");
+//    destroiVetor(V_periodicos, tam_periodicos);
+//    destroiVetor(V_conferencias, tam_conferencias);
+//    exit(5);
+//  }
 
   //Sumariza curriculos
   ledados(dirstream, argv[2]);
+
+
 
   //Desaloca vetor de strings
   destroiVetor(V_periodicos, tam_periodicos);
