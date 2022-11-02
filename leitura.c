@@ -68,89 +68,82 @@ classe_t *leStringsArquivo(char *filename, int *tam){
   return vetor;
 }
 
+//Le nome do pesquisador
+void leNome(FILE *stream){
+  char *s = malloc( sizeof(char) * STRSIZE );
+
+  fscanf(stream, "%s", s);
+  while ( !strstr(s, "NOME-COMPLETO=") )
+    fscanf(stream, "%s", s);
+  pegaDados(stream, s);
+  printf("Nome do pesquisador: %s\n", s );
+
+  free(s);
+}
+
 
 //Le dados de um evento
 void leEvento(FILE *stream){
-  char str[STRSIZE];
+  char *s = malloc( sizeof(char) * STRSIZE );
 
   //Acha o titulo do evento
-  fscanf(stream, "%s", &str);
-  while ( !strstr(str, "TITULO-DO-TRABALHO=") )
-    fscanf(stream, "%s", &str);
-  pegaDados(stream, str);
-  printf("%s\n", str );
+  fscanf(stream, "%s", s);
+  while ( !strstr(s, "TITULO-DO-TRABALHO=") )
+    fscanf(stream, "%s", s);
+  pegaDados(stream, s);
+  printf("%s\n", s );
 
   //Acha o ano do evento
-  fscanf(stream, "%s", &str);
-  while ( !strstr(str, "ANO-DO-TRABALHO=") )
-    fscanf(stream, "%s", &str);
-  pegaDados(stream, str);
-  printf("%s\n", str );
+  fscanf(stream, "%s", s);
+  while ( !strstr(s, "ANO-DO-TRABALHO=") )
+    fscanf(stream, "%s", s);
+  pegaDados(stream, s);
+  printf("%s\n", s );
 
   //Acha o nome do evento
-  fscanf(stream, "%s", &str);
-  while ( !strstr(str, "NOME-DO-EVENTO=") )
-    fscanf(stream, "%s", &str);
-  pegaDados(stream, str);
-  printf("%s\n", str );
+  fscanf(stream, "%s", s);
+  while ( !strstr(s, "NOME-DO-EVENTO=") )
+    fscanf(stream, "%s", s);
+  pegaDados(stream, s);
+  printf("%s\n", s );
 
-  //Pega o nome dos autores
-  //  fscanf(stream, "%s", &str);
-  //  while ( !strstr(str, "</TRABALHO-EM-EVENTOS>") ){
-  //
-  //    if ( strstr(str, "NOME-COMPLETO-DO-AUTOR=") ){
-  //      pegaDados(stream, str);
-  //      printf("%s\n", str );
-  //    }
-  //    fscanf(stream, "%s", &str);
-  //  }
-
+  free(s);
   printf("\n");
 }
 
 
 //Le dados de um artigo
 void leArtigo(FILE *stream){
-  char str[STRSIZE];
+  char *s = malloc( sizeof(char) * STRSIZE );
 
   //Acha o titulo do artigo
-  fscanf(stream, "%s", &str);
-  while ( !strstr(str, "TITULO-DO-ARTIGO=") )
-    fscanf(stream, "%s", &str);
-  pegaDados(stream, str);
-  printf("%s\n", str );
+  fscanf(stream, "%s", s);
+  while ( !strstr(s, "TITULO-DO-ARTIGO=") )
+    fscanf(stream, "%s", s);
+  pegaDados(stream, s);
+  printf("%s\n", s );
 
   //Acha o ano do artigo
-  fscanf(stream, "%s", &str);
-  while ( !strstr(str, "ANO-DO-ARTIGO=") )
-    fscanf(stream, "%s", &str);
-  pegaDados(stream, str);
-  printf("%s\n", str );
+  fscanf(stream, "%s", s);
+  while ( !strstr(s, "ANO-DO-ARTIGO=") )
+    fscanf(stream, "%s", s);
+  pegaDados(stream, s);
+  printf("%s\n", s );
 
   //Acha o periodico do artigo
-  fscanf(stream, "%s", &str);
-  while ( !strstr(str, "TITULO-DO-PERIODICO-OU-REVISTA=") )
-    fscanf(stream, "%s", &str);
-  pegaDados(stream, str);
-  printf("%s\n", str );
+  fscanf(stream, "%s", s);
+  while ( !strstr(s, "TITULO-DO-PERIODICO-OU-REVISTA=") )
+    fscanf(stream, "%s", s);
+  pegaDados(stream, s);
+  printf("%s\n", s );
 
-  //Pega o nome dos autores
-  //  fscanf(stream, "%s", &str);
-  //  while ( !strstr(str, "</ARTIGO-PUBLICADO>") ){
-  //
-  //    if ( strstr(str, "NOME-COMPLETO-DO-AUTOR=") ){
-  //      pegaDados(stream, str);
-  //      printf("%s\n", str );
-  //    }
-  //    fscanf(stream, "%s", &str);
-  //  }
-
+  free(s);
   printf("\n");
 }
 
 
 //Desaloca vetor de classes
-void destroiVetor(classe_t *vetor, int tam){
+void destroiClasse(classe_t *vetor, int tam){
 
   for (int i=0; i<tam ;i++){
     free(vetor[i].nome);

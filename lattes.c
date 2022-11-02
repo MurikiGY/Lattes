@@ -8,20 +8,8 @@
 #include "leitura.h"
 #include "formata.h"
 
-struct artigo {
-  char      *nomeArtigo;
-  int       ano;
-};
-typedef struct artigo artigo_t;
 
-struct curriculum {
-  char      *name;        //Nome da pessoa do curriculo
-  artigo_t  *producoes;   //Lista ligada de produções realizadas
-};
-typedef struct curriculum curriculum_t;
-
-
-//Retorna o numero de arquivos dentro da stream de um diretorio passado como parametro
+//Retorna o numero de arquivos dentro de um diretorio
 int nfiles (DIR *dirstream){
   struct dirent   *entry;     //Estrutura do dirent
   int             tam = 0;    //Contador do numero de arquivos
@@ -36,6 +24,7 @@ int nfiles (DIR *dirstream){
 
   return tam;
 }
+
 
 void ledados (DIR *dirstream, char *dir){
   struct dirent   *entry;         //Estrutura do dirent dara o dirstream
@@ -55,15 +44,10 @@ void ledados (DIR *dirstream, char *dir){
 
         //Le dados do arquivo
 
-        char *strng = malloc( sizeof(char) * STRSIZE );
-        
         //Busca o nome do pesquisador
-        fscanf(filestream, "%s", strng);
-        while ( !strstr(strng, "NOME-COMPLETO=") )
-          fscanf(filestream, "%s", strng);
-        pegaDados(filestream, strng);
-        printf("Nome do pesquisador: %s\n", strng );
+        leNome(filestream);
 
+        char *strng = malloc( sizeof(char) * STRSIZE );
         while ( fscanf(filestream, "%s", strng) != EOF ){
 
           //Le evento
@@ -84,7 +68,8 @@ void ledados (DIR *dirstream, char *dir){
       } else
         fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
 
-    }
+    } //if ( entry->d_type == DT_REG )
+
 }
 
 
@@ -97,7 +82,7 @@ int main (int argc, char **argv){
   classe_t    *V_conferencias;          //Vetor de classes conferencias
   int         tam_periodicos;           //Tamanho do vetor de periodicos
   int         tam_conferencias;         //Tamanho do vetor de conferencias
-//  curriculo_t *V_pesquisador;             //Vetor de pesquisadores
+//  curriculo_t *V_pesquisador;           //Vetor de pesquisadores
 //  int         tam_pesquisador;          //Tamanho do vetor de pesquisadores
 
 
@@ -141,10 +126,11 @@ int main (int argc, char **argv){
   V_conferencias = leStringsArquivo(conferencias, &tam_conferencias);
   if (!V_conferencias){
     fprintf(stderr, "Erro na leitura das conferencias\n");
-    destroiVetor(V_periodicos, tam_periodicos);
+    destroiClasse(V_periodicos, tam_periodicos);
     exit(4);
   }
 
+  //Inicializa vetor de pesquisadores
 //  tam_pesquisador = nfiles(dirstream);
 //  V_pesquisador = malloc( sizeof(curriculo_t) * tam_pesquisador );
 //  if ( !V_pesquisador ){
@@ -159,9 +145,10 @@ int main (int argc, char **argv){
 
 
 
-  //Desaloca vetor de strings
-  destroiVetor(V_periodicos, tam_periodicos);
-  destroiVetor(V_conferencias, tam_conferencias);
+  //Desaloca vetores
+//  destroiCurriculos(V_pesquisador, tam_pesquisador);
+  destroiClasse(V_periodicos, tam_periodicos);
+  destroiClasse(V_conferencias, tam_conferencias);
 
   //Fechamento da stream
   closedir(dirstream);

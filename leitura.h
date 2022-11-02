@@ -30,6 +30,9 @@ void delay(int number_of_seconds);
 //Le strings em um arquivo e as retorna num vetor de classe
 classe_t *leStringsArquivo(char *filename, int *tam);
 
+//Le nome do pesquisador
+void leNome(FILE *stream);
+
 //Le dados de um evento
 void leEvento(FILE *stream);
 
@@ -37,8 +40,15 @@ void leEvento(FILE *stream);
 void leArtigo(FILE *stream);
 
 //Desaloca vetor de classes
-void destroiVetor(classe_t *vetor, int tam);
+void destroiClasse(classe_t *vetor, int tam);
 
-void imprimeVetor(classe_t *vetor, int tam);
+//Desaloca vetor de curriculos
+void destroiCurriculos(curriculo_t *vetor, int tam);
+
+//Imprime vetor de classe
+void imprimeClasse(classe_t *vetor, int tam);
+
+//Imprime vetor de curriculos
+void imprimeCurriculo(curriculo_t *vetor, int tam);
 
 #endif
