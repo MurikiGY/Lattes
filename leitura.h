@@ -11,7 +11,8 @@ struct classes {
 typedef struct classes classe_t;
 
 struct producao {
-  char  *titulo;         //nome do periodico ou evento(conferencia)
+  char  *producao;      //Titulo da producao
+  char  *titulo;        //periodico ou evento(conferencia)
   char  *qualis;        //A1, A2, ... B4 ou C ou NC
   int   ano;            //Ano da producao
 };
@@ -37,13 +38,13 @@ classe_t *leQualificativos(char *filename, int *tam);
 void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo);
 
 //Le nome do pesquisador
-void leNome(FILE *stream);
+void leNome(FILE *stream, curriculo_t *V_pesq);
 
 //Le dados de um evento
-void leEvento(FILE *stream);
+void leEvento(FILE *stream, producao_t *prod);
 
 //Le dados de um artigo
-void leArtigo(FILE *stream);
+void leArtigo(FILE *stream, producao_t *prod);
 
 //Desaloca vetor de classes
 void destroiClasse(classe_t *vetor, int tam);

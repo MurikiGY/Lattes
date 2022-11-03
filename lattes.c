@@ -26,9 +26,13 @@ int nfiles (DIR *dirstream){
 }
 
 
-void ledados (DIR *dirstream, char *dir){
+void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
   struct dirent   *entry;         //Estrutura do dirent dara o dirstream
   FILE            *filestream;    //Stream de acesso a arquivo
+  int i=0;  //Contador do vetor do pesquisador
+  int j=0;  //Contador do vetor de eventos para cada pesquisador
+  int k=0;  //Contador do vetor de artigos para cada pesquisador
+
 
   //Iteração sobre o diretorio
   while ( entry = readdir(dirstream) )
@@ -46,24 +50,42 @@ void ledados (DIR *dirstream, char *dir){
 
         int cnt_evento, cnt_artigo;
         calcArtigoEvento(filestream, &cnt_evento, &cnt_artigo);
-        printf("Foram encontrados %d eventos e %d artigos\n", cnt_evento, cnt_artigo);
+        printf("Encontrados %d eventos e %d artigos\n", cnt_evento, cnt_artigo);
+        V_pesq[i].tam_eventos = cnt_evento;
+        V_pesq[i].tam_artigos = cnt_artigo;
+        V_pesq[i].V_eventos = malloc( sizeof(producao_t) * cnt_evento );
+        V_pesq[i].V_artigos = malloc( sizeof(producao_t) * cnt_artigo );
 
         //Busca o nome do pesquisador
-        leNome(filestream);
+        leNome(filestream, &V_pesq[i]);
+        printf("Nome do pesquisador %s\n", V_pesq[i].pesquisador);
 
         char *strng = malloc( sizeof(char) * STRSIZE );
         while ( fscanf(filestream, "%s", strng) != EOF ){
 
           //Le evento
-          if ( strstr(strng, "<TRABALHO-EM-EVENTOS") )
-            leEvento(filestream);
+          if ( strstr(strng, "<TRABALHO-EM-EVENTOS") ){
+            leEvento(filestream, &V_pesq[i].V_eventos[j]);
+            printf("Producao: %s\n", V_pesq[i].V_eventos[j].producao);
+            printf("Titulo: %s\n", V_pesq[i].V_eventos[j].titulo);
+            printf("Ano: %d\n", V_pesq[i].V_eventos[j].ano);
+            j++;
+          }
 
           //Le artigo
-          if ( strstr(strng, "<ARTIGO-PUBLICADO") )
-            leArtigo(filestream);
+          if ( strstr(strng, "<ARTIGO-PUBLICADO") ){
+            leArtigo(filestream, &V_pesq[i].V_artigos[k]);
+            printf("Producao: %s\n", V_pesq[i].V_artigos[k].producao);
+            printf("Titulo: %s\n", V_pesq[i].V_artigos[k].titulo);
+            printf("Ano: %d\n", V_pesq[i].V_artigos[k].ano);
+            k++;
+          }
 
         }
         free(strng);
+        i++;
+        j = 0;
+        k = 0;
 
         //Le dados do arquivo
 
@@ -86,8 +108,8 @@ int main (int argc, char **argv){
   classe_t    *V_conferencias;          //Vetor de classes conferencias
   int         tam_periodicos;           //Tamanho do vetor de periodicos
   int         tam_conferencias;         //Tamanho do vetor de conferencias
-//  curriculo_t *V_pesquisador;           //Vetor de pesquisadores
-//  int         tam_pesquisador;          //Tamanho do vetor de pesquisadores
+  curriculo_t *V_pesquisador;           //Vetor de pesquisadores
+  int         tam_pesquisador;          //Tamanho do vetor de pesquisadores
 
 
   locale = setlocale(LC_ALL, "");
@@ -135,22 +157,22 @@ int main (int argc, char **argv){
   }
 
   //Inicializa vetor de pesquisadores
-//  tam_pesquisador = nfiles(dirstream);
-//  V_pesquisador = malloc( sizeof(curriculo_t) * tam_pesquisador );
-//  if ( !V_pesquisador ){
-//    fprintf(stderr, "Falha de alocacao no vetor de pesquisadores\n");
-//    destroiVetor(V_periodicos, tam_periodicos);
-//    destroiVetor(V_conferencias, tam_conferencias);
-//    exit(5);
-//  }
+  tam_pesquisador = nfiles(dirstream);
+  V_pesquisador = malloc( sizeof(curriculo_t) * tam_pesquisador );
+  if ( !V_pesquisador ){
+    fprintf(stderr, "Falha de alocacao no vetor de pesquisadores\n");
+    destroiClasse(V_periodicos, tam_periodicos);
+    destroiClasse(V_conferencias, tam_conferencias);
+    exit(5);
+  }
 
   //Sumariza curriculos
-  ledados(dirstream, argv[2]);
+  ledados(dirstream, argv[2], V_pesquisador, tam_pesquisador);
 
 
 
   //Desaloca vetores
-//  destroiCurriculos(V_pesquisador, tam_pesquisador);
+  destroiCurriculos(V_pesquisador, tam_pesquisador);
   destroiClasse(V_periodicos, tam_periodicos);
   destroiClasse(V_conferencias, tam_conferencias);
 

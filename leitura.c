@@ -93,21 +93,22 @@ void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo){
 
 
 //Le nome do pesquisador
-void leNome(FILE *stream){
+void leNome(FILE *stream, curriculo_t *V_pesq){
   char *s = malloc( sizeof(char) * STRSIZE );
 
   fscanf(stream, "%s", s);
   while ( !strstr(s, "NOME-COMPLETO=") )
     fscanf(stream, "%s", s);
   pegaDados(stream, s);
-  printf("Nome do pesquisador: %s\n", s );
+  V_pesq->pesquisador = malloc(sizeof(char) * (strlen(s)+1));
+  strncpy(V_pesq->pesquisador, s, strlen(s)+1);
 
   free(s);
 }
 
 
 //Le dados de um evento
-void leEvento(FILE *stream){
+void leEvento(FILE *stream, producao_t *prod){
   char *s = malloc( sizeof(char) * STRSIZE );
 
   //Acha o titulo do evento
@@ -115,21 +116,26 @@ void leEvento(FILE *stream){
   while ( !strstr(s, "TITULO-DO-TRABALHO=") )
     fscanf(stream, "%s", s);
   pegaDados(stream, s);
-  printf("%s\n", s );
+
+  prod->producao = malloc( sizeof(char) * (strlen(s)+1) );
+  strncpy(prod->producao, s, strlen(s)+1);
 
   //Acha o ano do evento
   fscanf(stream, "%s", s);
   while ( !strstr(s, "ANO-DO-TRABALHO=") )
     fscanf(stream, "%s", s);
   pegaDados(stream, s);
-  printf("%s\n", s );
+
+  prod->ano = atoi(s);
 
   //Acha o nome do evento
   fscanf(stream, "%s", s);
   while ( !strstr(s, "NOME-DO-EVENTO=") )
     fscanf(stream, "%s", s);
   pegaDados(stream, s);
-  printf("%s\n", s );
+
+  prod->titulo = malloc( sizeof(char) * (strlen(s)+1) );
+  strncpy(prod->titulo, s, strlen(s)+1);
 
   free(s);
   printf("\n");
@@ -137,7 +143,7 @@ void leEvento(FILE *stream){
 
 
 //Le dados de um artigo
-void leArtigo(FILE *stream){
+void leArtigo(FILE *stream, producao_t *prod){
   char *s = malloc( sizeof(char) * STRSIZE );
 
   //Acha o titulo do artigo
@@ -145,21 +151,26 @@ void leArtigo(FILE *stream){
   while ( !strstr(s, "TITULO-DO-ARTIGO=") )
     fscanf(stream, "%s", s);
   pegaDados(stream, s);
-  printf("%s\n", s );
+
+  prod->producao = malloc( sizeof(char) * (strlen(s)+1) );
+  strncpy(prod->producao, s, strlen(s)+1);
 
   //Acha o ano do artigo
   fscanf(stream, "%s", s);
   while ( !strstr(s, "ANO-DO-ARTIGO=") )
     fscanf(stream, "%s", s);
   pegaDados(stream, s);
-  printf("%s\n", s );
+
+  prod->ano = atoi(s);
 
   //Acha o periodico do artigo
   fscanf(stream, "%s", s);
   while ( !strstr(s, "TITULO-DO-PERIODICO-OU-REVISTA=") )
     fscanf(stream, "%s", s);
   pegaDados(stream, s);
-  printf("%s\n", s );
+
+  prod->titulo = malloc( sizeof(char) * (strlen(s)+1) );
+  strncpy(prod->titulo, s, strlen(s)+1);
 
   free(s);
   printf("\n");
@@ -182,17 +193,29 @@ void destroiClasse(classe_t *vetor, int tam){
 void destroiCurriculos(curriculo_t *vetor, int tam){
 
   for (int i=0; i<tam ;i++){
+
     //Desaloca vetor de eventos
-    free(vetor[i].V_eventos->titulo);
-    free(vetor[i].V_eventos->qualis);
+    for (int j=0; j<vetor[i].tam_eventos ;j++){
+      free(vetor[i].V_eventos[j].producao);
+      free(vetor[i].V_eventos[j].titulo);
+      //free(vetor[i].V_eventos[j].qualis);
+    }
     free(vetor[i].V_eventos);
+
     //Desaloca vetor de periodicos
-    free(vetor[i].V_artigos->titulo);
-    free(vetor[i].V_artigos->qualis);
+    for (int k=0; k<vetor[i].tam_artigos ;k++)
+    {
+      free(vetor[i].V_artigos[k].producao);
+      free(vetor[i].V_artigos[k].titulo);
+      //free(vetor[i].V_artigos[k].qualis);
+    }
     free(vetor[i].V_artigos);
+
     //Desaloca nome
     free(vetor[i].pesquisador);
   }
+
+  free(vetor);
 }
 
 
