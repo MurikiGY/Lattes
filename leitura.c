@@ -21,7 +21,7 @@ void delay(int number_of_seconds){
 
 
 //Le strings em um arquivo e as retorna em um vetor
-classe_t *leStringsArquivo(char *filename, int *tam){
+classe_t *leQualificativos(char *filename, int *tam){
   FILE      *filestream;
   classe_t  *vetor;
   int       count = 0;
@@ -67,6 +67,30 @@ classe_t *leStringsArquivo(char *filename, int *tam){
 
   return vetor;
 }
+
+
+//Calcula a quantidade de artigos e eventos
+void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo){
+  int evento = 0;
+  int artigo = 0;
+  char *s = malloc( sizeof(char) * STRSIZE );
+
+  while ( fscanf(stream, "%s", s) != EOF )
+
+    if ( strstr(s, "<TRABALHO-EM-EVENTOS") )
+      evento++;
+    else 
+      if ( strstr(s, "<ARTIGO-PUBLICADO") )
+        artigo++;
+
+  free(s);
+
+  *num_evento = evento;
+  *num_artigo = artigo;
+
+  rewind(stream);
+}
+
 
 //Le nome do pesquisador
 void leNome(FILE *stream){
@@ -154,10 +178,52 @@ void destroiClasse(classe_t *vetor, int tam){
 }
 
 
-void imprimeVetor(classe_t *vetor, int tam){
+//Desaloca vetor de curriculos
+void destroiCurriculos(curriculo_t *vetor, int tam){
+
+  for (int i=0; i<tam ;i++){
+    //Desaloca vetor de eventos
+    free(vetor[i].V_eventos->titulo);
+    free(vetor[i].V_eventos->qualis);
+    free(vetor[i].V_eventos);
+    //Desaloca vetor de periodicos
+    free(vetor[i].V_artigos->titulo);
+    free(vetor[i].V_artigos->qualis);
+    free(vetor[i].V_artigos);
+    //Desaloca nome
+    free(vetor[i].pesquisador);
+  }
+}
+
+
+void imprimeClasse(classe_t *vetor, int tam){
 
   for (int i=0; i<tam ;i++){
     printf("%s\n", vetor[i].nome);
     printf("%s\n", vetor[i].tipo);
   }
 }
+
+void imprimeCurriculo(curriculo_t *vetor, int tam){
+
+  for (int i=0; i<tam ;i++){
+    printf("Imprimindo pesquisador: %s\n", vetor->pesquisador);
+
+    printf("Eventos:\n");
+    for (int j=0; i<vetor[i].tam_eventos ;i++){
+      printf("Evento: %s\n", vetor[i].V_eventos[j].titulo);
+      printf("Qualis: %s\n", vetor[i].V_eventos[j].qualis);
+      printf("Ano: %d\n", vetor[i].V_eventos[j].qualis);
+    }
+
+    printf("Artigos:\n");
+    for (int j=0; i<vetor[i].tam_eventos ;i++){
+      printf("Periodico: %s\n", vetor[i].V_artigos[j].titulo);
+      printf("Qualis: %s\n", vetor[i].V_artigos[j].qualis);
+      printf("Ano: %d\n", vetor[i].V_artigos[j].qualis);
+    }
+
+  }
+
+}
+

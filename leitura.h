@@ -11,15 +11,18 @@ struct classes {
 typedef struct classes classe_t;
 
 struct producao {
-  char  *qualificacao;  //A1, A2, ... B4 ou C ou Inex
+  char  *titulo;         //nome do periodico ou evento(conferencia)
+  char  *qualis;        //A1, A2, ... B4 ou C ou NC
   int   ano;            //Ano da producao
 };
 typedef struct producao producao_t;
 
 struct curriculo {
   char *pesquisador;    //Nome do pesquisador
-  producao_t *eventos;  //Vetor de conferencias
-  producao_t *artigos;  //Vetor de artigos
+  producao_t *V_eventos;  //Vetor de conferencias
+  producao_t *V_artigos;  //Vetor de artigos
+  int tam_eventos;
+  int tam_artigos;
 };
 typedef struct curriculo curriculo_t;
 
@@ -28,7 +31,10 @@ typedef struct curriculo curriculo_t;
 void delay(int number_of_seconds);
 
 //Le strings em um arquivo e as retorna num vetor de classe
-classe_t *leStringsArquivo(char *filename, int *tam);
+classe_t *leQualificativos(char *filename, int *tam);
+
+//Calcula a quantidade de artigos e eventos
+void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo);
 
 //Le nome do pesquisador
 void leNome(FILE *stream);

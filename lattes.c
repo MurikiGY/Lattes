@@ -44,6 +44,10 @@ void ledados (DIR *dirstream, char *dir){
 
         //Le dados do arquivo
 
+        int cnt_evento, cnt_artigo;
+        calcArtigoEvento(filestream, &cnt_evento, &cnt_artigo);
+        printf("Foram encontrados %d eventos e %d artigos\n", cnt_evento, cnt_artigo);
+
         //Busca o nome do pesquisador
         leNome(filestream);
 
@@ -116,14 +120,14 @@ int main (int argc, char **argv){
   }
 
   //Inicializa vetor de periodicos
-  V_periodicos = leStringsArquivo(periodicos, &tam_periodicos);
+  V_periodicos = leQualificativos(periodicos, &tam_periodicos);
   if (!V_periodicos){
     fprintf(stderr, "Erro na leitura dos periodicos\n");
     exit(3);
   }
 
   //Inicializa vetor de conferencias
-  V_conferencias = leStringsArquivo(conferencias, &tam_conferencias);
+  V_conferencias = leQualificativos(conferencias, &tam_conferencias);
   if (!V_conferencias){
     fprintf(stderr, "Erro na leitura das conferencias\n");
     destroiClasse(V_periodicos, tam_periodicos);
