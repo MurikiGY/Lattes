@@ -40,7 +40,7 @@ void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
 
       char path[strlen(dir) + strlen(entry->d_name) + 2];
       snprintf(path, strlen(dir) + strlen(entry->d_name) + 1,
-      "%s\%s", dir, entry->d_name);
+          "%s\%s", dir, entry->d_name);
 
       //Leitura dos arquivos
       filestream = fopen(path, "r");
@@ -50,7 +50,6 @@ void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
 
         int cnt_evento, cnt_artigo;
         calcArtigoEvento(filestream, &cnt_evento, &cnt_artigo);
-        printf("Encontrados %d eventos e %d artigos\n", cnt_evento, cnt_artigo);
         V_pesq[i].tam_eventos = cnt_evento;
         V_pesq[i].tam_artigos = cnt_artigo;
         V_pesq[i].V_eventos = malloc( sizeof(producao_t) * cnt_evento );
@@ -58,28 +57,17 @@ void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
 
         //Busca o nome do pesquisador
         leNome(filestream, &V_pesq[i]);
-        printf("Nome do pesquisador %s\n", V_pesq[i].pesquisador);
 
         char *strng = malloc( sizeof(char) * STRSIZE );
         while ( fscanf(filestream, "%s", strng) != EOF ){
 
           //Le evento
-          if ( strstr(strng, "<TRABALHO-EM-EVENTOS") ){
-            leEvento(filestream, &V_pesq[i].V_eventos[j]);
-            printf("Producao: %s\n", V_pesq[i].V_eventos[j].producao);
-            printf("Titulo: %s\n", V_pesq[i].V_eventos[j].titulo);
-            printf("Ano: %d\n", V_pesq[i].V_eventos[j].ano);
-            j++;
-          }
+          if ( strstr(strng, "<TRABALHO-EM-EVENTOS") )
+            leEvento(filestream, &V_pesq[i].V_eventos[j++]);
 
           //Le artigo
-          if ( strstr(strng, "<ARTIGO-PUBLICADO") ){
-            leArtigo(filestream, &V_pesq[i].V_artigos[k]);
-            printf("Producao: %s\n", V_pesq[i].V_artigos[k].producao);
-            printf("Titulo: %s\n", V_pesq[i].V_artigos[k].titulo);
-            printf("Ano: %d\n", V_pesq[i].V_artigos[k].ano);
-            k++;
-          }
+          if ( strstr(strng, "<ARTIGO-PUBLICADO") )
+            leArtigo(filestream, &V_pesq[i].V_artigos[k++]);
 
         }
         free(strng);
@@ -99,17 +87,148 @@ void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
 }
 
 
+///////////////////////////////////
+/// Edit Distance
+////////////////////////////////////
+int distance (char* word1, int len1, char* word2, int len2)
+{
+
+  int matrix[len1 + 1][len2 + 1];
+  int i;
+
+  for (i = 0; i <= len1; i++)
+    matrix[i][0] = i;
+
+  for (i = 0; i <= len2; i++)
+    matrix[0][i] = i;
+
+  for (i = 1; i <= len1; i++)
+  {
+    int j;
+    char c1;
+
+    c1 = word1[i-1];
+    for (j = 1; j <= len2; j++)
+    {
+      char c2;
+
+      c2 = word2[j-1];
+      if (c1 == c2)
+        matrix[i][j] = matrix[i-1][j-1];
+
+      else
+      {
+        int delete;
+        int insert;
+        int substitute;
+        int minimum;
+
+        delete = matrix[i-1][j] + 1;
+        insert = matrix[i][j-1] + 1;
+        substitute = matrix[i-1][j-1] + 1;
+        minimum = delete;
+        if (insert < minimum)
+          minimum = insert;
+
+        if (substitute < minimum)
+          minimum = substitute;
+
+        matrix[i][j] = minimum;
+      }
+    }
+  }
+  //printf("Distancia Inside %d\n", matrix[len1][len2] ) ;
+  //exit(0);
+  return (matrix[len1][len2]);
+}
+
+
+void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, classe_t *V_conf, int tam_conf){
+
+  //Percorre pesquisadores
+  for(int i=0; i<tam_pesq ;i++){
+
+    //Percorre eventos
+    for(int j=0; j<V_pesq[i].tam_eventos ;j++){
+
+      //Percorre vetor de conferencias
+      for(int l=0; l<tam_conf ;l++){
+
+        V_pesq[i].V_eventos[j].qualis = NULL;
+        if ( distance(V_pesq[i].V_eventos[j].titulo, strlen(V_pesq[i].V_eventos[j].titulo), V_conf[l].nome, strlen(V_conf[l].nome)) <5/*strlen(V_pesq[i].V_eventos[j].titulo)*/ ){
+          V_pesq[i].V_eventos[j].qualis = malloc( sizeof(char) * (strlen(V_conf[l].tipo)+2) );
+          //strcpy(V_pesq[i].V_eventos[j].qualis, V_conf[l].tipo);
+          strncpy(V_pesq[i].V_eventos[j].qualis, V_conf[l].tipo, strlen(V_conf[l].tipo)+1 );
+          break;
+        }
+
+      } //For de conferencias
+
+      if ( !V_pesq[i].V_eventos[j].qualis ){
+        V_pesq[i].V_eventos[j].qualis = malloc( sizeof(char) * (strlen("NC")+1) );
+        //strcpy(V_pesq[i].V_eventos[j].qualis, "NC" );
+        strncpy(V_pesq[i].V_eventos[j].qualis, "NC", strlen("NC")+1 );
+      }
+
+    } //Percorre eventos
+
+    printf("\n");
+
+    //Percorre artigos
+    for(int k=0; k<V_pesq[i].tam_artigos ;k++){
+
+      //Percorre vetor de artigos
+      for(int l=0; l<tam_per ;l++){
+
+        V_pesq[i].V_artigos[k].qualis = NULL;
+        if ( distance(V_pesq[i].V_artigos[k].titulo, strlen(V_pesq[i].V_artigos[k].titulo), V_per[l].nome, strlen(V_per[l].nome)) <5/*strlen(V_pesq[i].V_artigos[k].titulo)*/ ){
+          V_pesq[i].V_artigos[k].qualis = malloc( sizeof(char) * (strlen(V_per[l].tipo)+2) );
+          //strcpy(V_pesq[i].V_artigos[k].qualis, V_per[l].tipo);
+          strncpy(V_pesq[i].V_artigos[k].qualis, V_per[l].tipo, strlen(V_per[l].tipo)+1 );
+          break;
+        }
+
+      } //For de artigos
+
+      if ( !V_pesq[i].V_artigos[k].qualis ){
+        V_pesq[i].V_artigos[k].qualis = malloc( sizeof(char) * (strlen("NC")+1) );
+        //strcpy(V_pesq[i].V_artigos[k].qualis, "NC" );
+        strncpy(V_pesq[i].V_artigos[k].qualis, "NC", strlen("NC")+1 );
+      }
+
+    } //Percorre artigos
+
+    printf("\n");
+
+  } //Percorre pesquisadores
+
+}
+
+
+static int comparaAno(const void *p1, const void *p2){
+  return ((producao_t *)p1)->ano - ((producao_t *)p2)->ano;
+}
+
+
+void ordenaDados(curriculo_t *vetor, int tam){
+  for(int i=0; i<tam ;i++){
+    qsort(vetor[i].V_eventos, vetor[i].tam_eventos, sizeof(producao_t), comparaAno);
+    qsort(vetor[i].V_artigos, vetor[i].tam_artigos, sizeof(producao_t), comparaAno);
+  }
+}
+
+
 int main (int argc, char **argv){
   DIR         *dirstream;               //Variavel de stream do diretorio
   char        *locale;                  //Configurar em UTF-8
   char        periodicos[FILENAME];     //Nome do arquivo de periodicos
   char        conferencias[FILENAME];   //Nome do arquivo de conferencias
-  classe_t    *V_periodicos;            //Vetor de classes periodicos
-  classe_t    *V_conferencias;          //Vetor de classes conferencias
-  int         tam_periodicos;           //Tamanho do vetor de periodicos
-  int         tam_conferencias;         //Tamanho do vetor de conferencias
-  curriculo_t *V_pesquisador;           //Vetor de pesquisadores
-  int         tam_pesquisador;          //Tamanho do vetor de pesquisadores
+  classe_t    *V_per;                   //Vetor de classes periodicos
+  classe_t    *V_conf;                  //Vetor de classes conferencias
+  int         tam_per;                  //Tamanho do vetor de periodicos
+  int         tam_conf;                 //Tamanho do vetor de conferencias
+  curriculo_t *V_pesq;                  //Vetor de pesquisadores
+  int         tam_pesq;          //Tamanho do vetor de pesquisadores
 
 
   locale = setlocale(LC_ALL, "");
@@ -142,39 +261,45 @@ int main (int argc, char **argv){
   }
 
   //Inicializa vetor de periodicos
-  V_periodicos = leQualificativos(periodicos, &tam_periodicos);
-  if (!V_periodicos){
+  V_per = leQualificativos(periodicos, &tam_per);
+  if (!V_per){
     fprintf(stderr, "Erro na leitura dos periodicos\n");
     exit(3);
   }
 
   //Inicializa vetor de conferencias
-  V_conferencias = leQualificativos(conferencias, &tam_conferencias);
-  if (!V_conferencias){
+  V_conf = leQualificativos(conferencias, &tam_conf);
+  if (!V_conf){
     fprintf(stderr, "Erro na leitura das conferencias\n");
-    destroiClasse(V_periodicos, tam_periodicos);
+    destroiClasse(V_per, tam_per);
     exit(4);
   }
 
   //Inicializa vetor de pesquisadores
-  tam_pesquisador = nfiles(dirstream);
-  V_pesquisador = malloc( sizeof(curriculo_t) * tam_pesquisador );
-  if ( !V_pesquisador ){
+  tam_pesq = nfiles(dirstream);
+  V_pesq = malloc( sizeof(curriculo_t) * tam_pesq );
+  if ( !V_pesq ){
     fprintf(stderr, "Falha de alocacao no vetor de pesquisadores\n");
-    destroiClasse(V_periodicos, tam_periodicos);
-    destroiClasse(V_conferencias, tam_conferencias);
+    destroiClasse(V_per, tam_per);
+    destroiClasse(V_conf, tam_conf);
     exit(5);
   }
 
   //Sumariza curriculos
-  ledados(dirstream, argv[2], V_pesquisador, tam_pesquisador);
+  ledados(dirstream, argv[2], V_pesq, tam_pesq);
 
+  //Ordena periodicos e eventos por ano
+  ordenaDados(V_pesq, tam_pesq);
 
+  //Atribui os qualitativos de periodicos e conferencias aos pesquisadores
+  qualifica(V_pesq, tam_pesq, V_per, tam_per, V_conf, tam_conf);
+
+  imprimeCurriculo(V_pesq, tam_pesq);
 
   //Desaloca vetores
-  destroiCurriculos(V_pesquisador, tam_pesquisador);
-  destroiClasse(V_periodicos, tam_periodicos);
-  destroiClasse(V_conferencias, tam_conferencias);
+  destroiCurriculos(V_pesq, tam_pesq);
+  destroiClasse(V_per, tam_per);
+  destroiClasse(V_conf, tam_conf);
 
   //Fechamento da stream
   closedir(dirstream);

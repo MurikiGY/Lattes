@@ -138,7 +138,6 @@ void leEvento(FILE *stream, producao_t *prod){
   strncpy(prod->titulo, s, strlen(s)+1);
 
   free(s);
-  printf("\n");
 }
 
 
@@ -173,7 +172,6 @@ void leArtigo(FILE *stream, producao_t *prod){
   strncpy(prod->titulo, s, strlen(s)+1);
 
   free(s);
-  printf("\n");
 }
 
 
@@ -198,7 +196,7 @@ void destroiCurriculos(curriculo_t *vetor, int tam){
     for (int j=0; j<vetor[i].tam_eventos ;j++){
       free(vetor[i].V_eventos[j].producao);
       free(vetor[i].V_eventos[j].titulo);
-      //free(vetor[i].V_eventos[j].qualis);
+      free(vetor[i].V_eventos[j].qualis);
     }
     free(vetor[i].V_eventos);
 
@@ -207,7 +205,7 @@ void destroiCurriculos(curriculo_t *vetor, int tam){
     {
       free(vetor[i].V_artigos[k].producao);
       free(vetor[i].V_artigos[k].titulo);
-      //free(vetor[i].V_artigos[k].qualis);
+      free(vetor[i].V_artigos[k].qualis);
     }
     free(vetor[i].V_artigos);
 
@@ -230,20 +228,26 @@ void imprimeClasse(classe_t *vetor, int tam){
 void imprimeCurriculo(curriculo_t *vetor, int tam){
 
   for (int i=0; i<tam ;i++){
-    printf("Imprimindo pesquisador: %s\n", vetor->pesquisador);
+    printf("Imprimindo pesquisador: %s\n", vetor[i].pesquisador);
+
+    printf("\n");
 
     printf("Eventos:\n");
-    for (int j=0; i<vetor[i].tam_eventos ;i++){
+    for (int j=0; j<vetor[i].tam_eventos ;j++){
+      printf("Producao: %s\n", vetor[i].V_eventos[j].producao);
       printf("Evento: %s\n", vetor[i].V_eventos[j].titulo);
       printf("Qualis: %s\n", vetor[i].V_eventos[j].qualis);
-      printf("Ano: %d\n", vetor[i].V_eventos[j].qualis);
+      printf("Ano: %d\n", vetor[i].V_eventos[j].ano);
     }
 
+    printf("\n");
+
     printf("Artigos:\n");
-    for (int j=0; i<vetor[i].tam_eventos ;i++){
+    for (int j=0; j<vetor[i].tam_artigos ;j++){
+      printf("producao: %s\n", vetor[i].V_artigos[j].producao);
       printf("Periodico: %s\n", vetor[i].V_artigos[j].titulo);
       printf("Qualis: %s\n", vetor[i].V_artigos[j].qualis);
-      printf("Ano: %d\n", vetor[i].V_artigos[j].qualis);
+      printf("Ano: %d\n", vetor[i].V_artigos[j].ano);
     }
 
   }
