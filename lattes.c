@@ -7,7 +7,7 @@
 
 #include "leitura.h"
 #include "formata.h"
-
+#include "liblista.h"
 
 //Retorna o numero de arquivos dentro de um diretorio
 int nfiles (DIR *dirstream){
@@ -153,9 +153,10 @@ void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, 
 
       //Percorre vetor de conferencias
       for(int l=0; l<tam_conf ;l++){
+        //printf("\rBuscando por conferencias");
 
         V_pesq[i].V_eventos[j].qualis = NULL;
-        if ( distance(V_pesq[i].V_eventos[j].titulo, strlen(V_pesq[i].V_eventos[j].titulo), V_conf[l].nome, strlen(V_conf[l].nome)) <5/*strlen(V_pesq[i].V_eventos[j].titulo)*/ ){
+        if ( distance(V_pesq[i].V_eventos[j].titulo, strlen(V_pesq[i].V_eventos[j].titulo), V_conf[l].nome, strlen(V_conf[l].nome)) < 10/*strlen(V_pesq[i].V_eventos[j].titulo)*/ ){
           V_pesq[i].V_eventos[j].qualis = malloc( sizeof(char) * (strlen(V_conf[l].tipo)+2) );
           //strcpy(V_pesq[i].V_eventos[j].qualis, V_conf[l].tipo);
           strncpy(V_pesq[i].V_eventos[j].qualis, V_conf[l].tipo, strlen(V_conf[l].tipo)+1 );
@@ -179,9 +180,10 @@ void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, 
 
       //Percorre vetor de artigos
       for(int l=0; l<tam_per ;l++){
+        //printf("\rBuscando por Artigos");
 
         V_pesq[i].V_artigos[k].qualis = NULL;
-        if ( distance(V_pesq[i].V_artigos[k].titulo, strlen(V_pesq[i].V_artigos[k].titulo), V_per[l].nome, strlen(V_per[l].nome)) <5/*strlen(V_pesq[i].V_artigos[k].titulo)*/ ){
+        if ( distance(V_pesq[i].V_artigos[k].titulo, strlen(V_pesq[i].V_artigos[k].titulo), V_per[l].nome, strlen(V_per[l].nome)) < 10/*strlen(V_pesq[i].V_artigos[k].titulo)*/ ){
           V_pesq[i].V_artigos[k].qualis = malloc( sizeof(char) * (strlen(V_per[l].tipo)+2) );
           //strcpy(V_pesq[i].V_artigos[k].qualis, V_per[l].tipo);
           strncpy(V_pesq[i].V_artigos[k].qualis, V_per[l].tipo, strlen(V_per[l].tipo)+1 );
@@ -218,6 +220,229 @@ void ordenaDados(curriculo_t *vetor, int tam){
 }
 
 
+int menu (){
+  int numero;
+  int bol = 0;
+
+  printf("+-----------------------------------------------------------+\n");
+  printf("| Opções de entrada:                                        |\n");
+  printf("| 1 - Periodicos globais                                    |\n");
+  printf("| 2 - Conferencias globais                                  |\n");
+  printf("| 3 - Pesquisadores                                         |\n");
+  printf("| 4 - Anual                                                 |\n");
+  printf("| 5 - Classificações em C                                   |\n");
+  printf("| 6 - Não classificados                                     |\n");
+  printf("| 7 - Sair                                                  |\n");
+  printf("+-----------------------------------------------------------+\n");
+  printf("Entrada: ");
+
+  while ( !bol ){
+    scanf("%d", &numero);
+    if ( numero > 0 && numero < 8)
+      bol = 1;
+    else{
+      printf("Operação inválida, tente novamente\n");
+      printf("Entrada: ");
+    }
+  }
+
+  printf("\e[H\e[2J"); 
+
+  return numero;
+}
+
+
+void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao){
+  lista_t **V_lista;   //Vetor de listas de estratos
+
+  V_lista = malloc( sizeof(lista_t *)*10 );
+
+  //Inicializa listas
+  for (int i=0; i<10 ;i++)
+    V_lista[i] = criaLista();
+
+  //Percorre pesquisadores
+  for (int i=0; i<tam_pesq ;i++){
+    
+    if ( opcao == 1 ){
+
+      //Percorre eventos
+      for (int j=0; j<V_pesq[i].tam_eventos ;j++){
+        if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "A1") ){
+          if ( buscaListaIncrementa(V_lista[0], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "A2") ){
+          if ( buscaListaIncrementa(V_lista[1], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "A3") ){
+          if ( buscaListaIncrementa(V_lista[2], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "A4") ){
+          if ( buscaListaIncrementa(V_lista[3], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "B1") ){
+          if ( buscaListaIncrementa(V_lista[4], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "B2") ){
+          if ( buscaListaIncrementa(V_lista[5], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "B3") ){
+          if ( buscaListaIncrementa(V_lista[6], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "B4") ){
+          if ( buscaListaIncrementa(V_lista[7], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "C" ) ){
+          if ( buscaListaIncrementa(V_lista[8], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "NC") ){
+          if ( buscaListaIncrementa(V_lista[9], V_pesq[i].V_eventos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        }
+
+      } //For percorre eventos
+ 
+    } else {
+      //Percorre artigos
+      for (int j=0; j<V_pesq[i].tam_artigos ;j++){
+
+        if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "A1") ){
+          if ( buscaListaIncrementa(V_lista[0], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "A2") ){
+          if ( buscaListaIncrementa(V_lista[1], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "A3") ){
+          if ( buscaListaIncrementa(V_lista[2], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "A4") ){
+          if ( buscaListaIncrementa(V_lista[3], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "B1") ){
+          if ( buscaListaIncrementa(V_lista[4], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "B2") ){
+          if ( buscaListaIncrementa(V_lista[5], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "B3") ){
+          if ( buscaListaIncrementa(V_lista[6], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "B4") ){
+          if ( buscaListaIncrementa(V_lista[7], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "C" ) ){
+          if ( buscaListaIncrementa(V_lista[8], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        } else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "NC") ){
+          if ( buscaListaIncrementa(V_lista[9], V_pesq[i].V_artigos[j].titulo) )
+              printf("Erro em buscaListaIncrementa\n");
+        }
+
+      } //For de artigos
+
+    } //If opcao
+  } //For pesquisadores
+
+  //Impressao de dados
+  for (int i=0; i<4 ;i++){
+    printf("A%d:\n", i+1);
+    listaImprime(V_lista[i]);}
+  for (int i=4; i<8 ;i++){
+    printf("B%d:\n", i-3);
+    listaImprime(V_lista[i]);}
+  printf("C:\n");
+  listaImprime(V_lista[8]);
+  printf("NC:\n");
+  listaImprime(V_lista[9]);
+
+  //Destroi listas
+  for (int i=0; i<10 ;i++)
+    V_lista[i] = listaDestroi(V_lista[i]);
+
+    free(V_lista);
+
+}
+
+
+void calculaPesquisador(curriculo_t *V_pesq, int tam_pesq){
+  int per[10] = {};
+  int conf[10] = {};
+
+  //Percorre pesquisadores
+  for (int i=0; i<tam_pesq ;i++){
+    
+    //percorre conferencias
+    for (int j=0; j<V_pesq[i].tam_eventos ;j++){
+      if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "A1") )
+        conf[0]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "A2") )
+        conf[1]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "A3") )
+        conf[2]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "A4") )
+        conf[3]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "B1") )
+        conf[4]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "B2") )
+        conf[5]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "B3") )
+        conf[6]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "B4") )
+        conf[7]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "C") )
+        conf[8]++;
+      else if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "NC") )
+        conf[9]++;
+    } //For de conferencias
+
+    //percorre periodicos
+    for (int j=0; j<V_pesq[i].tam_artigos ;j++){
+      if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "A1") )
+        per[0]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "A2") )
+        per[1]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "A3") )
+        per[2]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "A4") )
+        per[3]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "B1") )
+        per[4]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "B2") )
+        per[5]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "B3") )
+        per[6]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "B4") )
+        per[7]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "C") )
+        per[8]++;
+      else if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "NC") )
+        per[9]++;
+    } //For de periodicos
+
+    //Impressão
+    printf("Pesquisador: %s\n", V_pesq[i].pesquisador);
+    printf("+---------------------------+\n");
+    printf("| Conferencias | Periodicos |\n");
+    printf("+---------------------------+\n");
+    for (int j=0; j<4 ;j++)
+      printf("| A%d: %03d      | A%d: %03d    |\n", j+1, conf[j], j+1, per[j]);
+    for (int j=4; j<8 ;j++)
+      printf("| B%d: %03d      | B%d: %03d    |\n", j-3, conf[j], j-3, per[j]);
+    printf("| C : %03d      | C : %03d    |\n", conf[8], per[8]);
+    printf("| NC: %03d      | NC: %03d    |\n", conf[9], per[9]);
+    printf("+---------------------------+\n");
+
+    //Zera vetores
+    memset(conf, 0, 10*sizeof(int));
+    memset(per, 0, 10*sizeof(int));
+
+    printf("\n");
+
+  } //For de pesquisadores
+
+}
+
+
 int main (int argc, char **argv){
   DIR         *dirstream;               //Variavel de stream do diretorio
   char        *locale;                  //Configurar em UTF-8
@@ -228,13 +453,13 @@ int main (int argc, char **argv){
   int         tam_per;                  //Tamanho do vetor de periodicos
   int         tam_conf;                 //Tamanho do vetor de conferencias
   curriculo_t *V_pesq;                  //Vetor de pesquisadores
-  int         tam_pesq;          //Tamanho do vetor de pesquisadores
+  int         tam_pesq;                 //Tamanho do vetor de pesquisadores
+  int option;
 
 
   locale = setlocale(LC_ALL, "");
 
   //Teste de parametros
-  int option;
   while ( (option = getopt(argc, argv, "d:p:c:")) != -1){
 
     switch (option){
@@ -294,8 +519,45 @@ int main (int argc, char **argv){
   //Atribui os qualitativos de periodicos e conferencias aos pesquisadores
   qualifica(V_pesq, tam_pesq, V_per, tam_per, V_conf, tam_conf);
 
-  imprimeCurriculo(V_pesq, tam_pesq);
+  printf("\e[H\e[2J"); 
+  option = menu();
 
+  while ( option != 7 ){
+    if ( option == 1 ){
+      printf("+---------------------------------------------------+\n");
+      printf("| Calculando periodicos globais                     |\n");
+      printf("+---------------------------------------------------+\n");
+      calculaGlobal(V_pesq, tam_pesq, 0);
+    } else if ( option == 2 ){
+      printf("+---------------------------------------------------+\n");
+      printf("| Calculando conferencias globais                   |\n");
+      printf("+---------------------------------------------------+\n");
+      calculaGlobal(V_pesq, tam_pesq, 1);
+    } else if ( option == 3 ){
+      printf("+---------------------------------------------------+\n");
+      printf("| Calculando estratos dos pesquisadores             |\n");
+      printf("+---------------------------------------------------+\n");
+      calculaPesquisador(V_pesq, tam_pesq);
+    } else if ( option == 4 ){
+      printf("+---------------------------------------------------+\n");
+      printf("| Calculando estratos por ano                       |\n");
+      printf("+---------------------------------------------------+\n");
+      calculaGlobal(V_pesq, tam_pesq, 1);
+    } else if ( option == 5 ){
+      printf("+---------------------------------------------------+\n");
+      printf("| Calculando estratos de nivel C                    |\n");
+      printf("+---------------------------------------------------+\n");
+      calculaGlobal(V_pesq, tam_pesq, 1);
+    } else if ( option == 6 ){
+      printf("+---------------------------------------------------+\n");
+      printf("| Calculando estratos não encontrados               |\n");
+      printf("+---------------------------------------------------+\n");
+      calculaGlobal(V_pesq, tam_pesq, 1);
+    }
+    option = menu();
+  }
+
+    
   //Desaloca vetores
   destroiCurriculos(V_pesq, tam_pesq);
   destroiClasse(V_per, tam_per);
