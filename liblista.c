@@ -63,20 +63,23 @@ int queue(lista_t *l, char *t){
 ////Retorna titulo por parametro e quantidade por retorno
 int dequeue(lista_t *l, char *t){
   nodo_t *aux;
+  int quant;
 
   if ( l->tam == 0 )
-    return 1;
+    return 0;
 
   if ( l->tam == 1 )
     l->tail = NULL;
 
-  strncpy(t, l->head->titulo, strlen(l->head->titulo));
+  t = malloc( sizeof(char)*(strlen(l->head->titulo)+1) );
+  strncpy(t, l->head->titulo, strlen(l->head->titulo)+1);
+  quant = l->head->cntr;
 
   aux = l->head->prox;
   free(l->head);
   l->head = aux;
   (l->tam)--;
-  return 0;
+  return quant;
 }
 
 //Busca string dentro da lista e incrementa cntr se encontrar
@@ -106,7 +109,6 @@ void listaImprime(lista_t *l){
       printf("%d\n", aux->cntr);
       aux = aux->prox;
     }
-    printf("\n");
   }
 }
 
