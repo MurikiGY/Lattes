@@ -74,8 +74,10 @@ int criaNodo(nodo_ano_t **pointer, int ano, char *qualis, int option){
 int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
   nodo_ano_t *nodo;
 
-  //Lista vazia
-  if ( !a->head ){
+  nodo_ano_t *aux1, aux2;
+
+  if ( a->tam == 0 ){
+
     //Configura o nodo
     nodo = malloc( sizeof(nodo_ano_t) );
     nodo->ano = ano;
@@ -88,59 +90,86 @@ int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
       (nodo->conf[ estrato(qualis) ])++;
     else
       (nodo->per[ estrato(qualis) ])++;
+
     a->head = nodo;
     a->tail = nodo;
     (a->tam)++;
     return 0;
-  }
+  } //lista vazia
 
-  //percorre lista
-  nodo_ano_t *aux1 = a->head;
-  nodo_ano_t *aux2;
-  while ( aux1->ano < ano && aux1->prox != NULL ){
+  //Insere inicio
+  if ( ano < a->head->ano ){
+
+    //Configura o nodo
+    nodo = malloc( sizeof(nodo_ano_t) );
+    nodo->ano = ano;
+    nodo->conf = malloc ( sizeof(int) * 10 );
+    nodo->per  = malloc ( sizeof(int) * 10 );
+    nodo->prox = NULL;
+    memset(nodo->conf, 0, sizeof(int) * 10 );
+    memset(nodo->per , 0, sizeof(int) * 10 );
+    if ( option == 0 )
+      (nodo->conf[ estrato(qualis) ])++;
+    else
+      (nodo->per[ estrato(qualis) ])++;
+
+    nodo->prox = a->head;
+    a->head = nodo;
+    (a->tam)++;
+    return 0;
+
+  } else {
+
+    nodo_ano_t *aux1 = a->head;
+    nodo_ano_t *aux2;
+    
+    //Ajusta ponteiros
+    while ( aux1->ano < ano && aux1->prox != NULL){
+      aux2 = aux1;
+      aux1 = aux1->prox;
+    }
+
     if ( aux1->ano == ano ){
+
+      //Incrementa nodo
       if ( option == 0 )
         (aux1->conf[ estrato(qualis) ])++;
       else
         (aux1->per[ estrato(qualis) ])++;
       return 0;
-    }
-    aux2 = aux1;
-    aux1 = aux1->prox;
-  }
 
-  if ( aux1->ano == ano ){
-    if ( option == 0 )
-      (aux1->conf[ estrato(qualis) ])++;
-    else
-      (aux1->per[ estrato(qualis) ])++;
-    return 0;
-  }
+    } else {
 
+      //Configura o nodo
+      nodo = malloc( sizeof(nodo_ano_t) );
+      nodo->ano = ano;
+      nodo->conf = malloc ( sizeof(int) * 10 );
+      nodo->per  = malloc ( sizeof(int) * 10 );
+      nodo->prox = NULL;
+      memset(nodo->conf, 0, sizeof(int) * 10 );
+      memset(nodo->per , 0, sizeof(int) * 10 );
+      if ( option == 0 )
+        (nodo->conf[ estrato(qualis) ])++;
+      else
+        (nodo->per[ estrato(qualis) ])++;
 
-  //Cria novo nodo na lista
-  nodo = malloc( sizeof(nodo_ano_t) );
-  nodo->ano = ano;
-  nodo->conf = malloc ( sizeof(int) * 10 );
-  nodo->per  = malloc ( sizeof(int) * 10 );
-  nodo->prox = NULL;
-  memset(nodo->conf, 0, sizeof(int) * 10 );
-  memset(nodo->per, 0, sizeof(int) * 10 );
-  if ( option == 0 )
-    (nodo->conf[ estrato(qualis) ])++;
-  else
-    (nodo->per[ estrato(qualis) ])++;
+      if ( ano > aux1->ano ){
 
-  if ( !aux1->prox ){
-    //nodo no final
-    aux1->prox = nodo;
-    a->tail = nodo;
-  } else {
-    aux2->prox = nodo;
-    nodo->prox = aux1;
-  }
+        //Insere no final
+        aux1->prox = nodo;
+        a->tail = nodo;
+      } else {
+        //Insere entre aux1 e aux2
+        nodo->prox = aux1;
+        aux2->prox = nodo;
 
-  (a->tam)++;
+      }
+      (a->tam)++;
+
+    } //Insere dados
+
+  } //Insere inicio
+
   return 0;
 }
 

@@ -409,7 +409,6 @@ void calculaAno(curriculo_t *V_pesq, int tam_pesq){
 
   for (int i=0; i<tam_pesq ;i++){
 
-  imprimeListaAno(anos);
     //Percorre conferencias
     for (int j=0; j<V_pesq[i].tam_eventos ;j++)
       if ( strcmp(V_pesq[i].V_eventos[j].qualis, "NC") )
@@ -426,6 +425,7 @@ void calculaAno(curriculo_t *V_pesq, int tam_pesq){
 
   } //For de pesquisadores
 
+  imprimeListaAno(anos);
 
   anos = destroiListaAno(anos);
 
