@@ -8,6 +8,7 @@
 #include "leitura.h"
 #include "formata.h"
 #include "liblista.h"
+#include "libano.h"
 
 //Retorna o numero de arquivos dentro de um diretorio
 int nfiles (DIR *dirstream){
@@ -158,7 +159,7 @@ void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, 
         fflush(stdout);
 
         V_pesq[i].V_eventos[j].qualis = NULL;
-        if ( distance(V_pesq[i].V_eventos[j].titulo, strlen(V_pesq[i].V_eventos[j].titulo), V_conf[l].nome, strlen(V_conf[l].nome)) < 10 ){
+        if ( distance(V_pesq[i].V_eventos[j].titulo, strlen(V_pesq[i].V_eventos[j].titulo), V_conf[l].nome, strlen(V_conf[l].nome)) < 15 ){
           V_pesq[i].V_eventos[j].qualis = malloc( sizeof(char) * (strlen(V_conf[l].tipo)+2) );
           strncpy(V_pesq[i].V_eventos[j].qualis, V_conf[l].tipo, strlen(V_conf[l].tipo)+1 );
           break;
@@ -184,7 +185,7 @@ void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, 
         fflush(stdout);
 
         V_pesq[i].V_artigos[k].qualis = NULL;
-        if ( distance(V_pesq[i].V_artigos[k].titulo, strlen(V_pesq[i].V_artigos[k].titulo), V_per[l].nome, strlen(V_per[l].nome)) < 10 ){
+        if ( distance(V_pesq[i].V_artigos[k].titulo, strlen(V_pesq[i].V_artigos[k].titulo), V_per[l].nome, strlen(V_per[l].nome)) < 15 ){
           V_pesq[i].V_artigos[k].qualis = malloc( sizeof(char) * (strlen(V_per[l].tipo)+2) );
           strncpy(V_pesq[i].V_artigos[k].qualis, V_per[l].tipo, strlen(V_per[l].tipo)+1 );
           break;
@@ -325,11 +326,11 @@ void calculaPesquisador(curriculo_t *V_pesq, int tam_pesq){
     printf("| Conferencias | Periodicos |\n");
     printf("+---------------------------+\n");
     for (int j=0; j<4 ;j++)
-      printf("| A%d: %03d      | A%d: %03d    |\n", j+1, conf[j], j+1, per[j]);
+      printf("| A%d: %-03d      | A%d: %-03d    |\n", j+1, conf[j], j+1, per[j]);
     for (int j=4; j<8 ;j++)
-      printf("| B%d: %03d      | B%d: %03d    |\n", j-3, conf[j], j-3, per[j]);
-    printf("| C : %03d      | C : %03d    |\n", conf[8], per[8]);
-    printf("| NC: %03d      | NC: %03d    |\n", conf[9], per[9]);
+      printf("| B%d: %-03d      | B%d: %-03d    |\n", j-3, conf[j], j-3, per[j]);
+    printf("| C : %-03d      | C : %-03d    |\n", conf[8], per[8]);
+    printf("| NC: %-03d      | NC: %-03d    |\n", conf[9], per[9]);
     printf("+---------------------------+\n");
 
     //Zera vetores
@@ -402,8 +403,31 @@ void calculaEstratoCNC(curriculo_t *V_pesq, int tam_pesq, int option){
 
 
 void calculaAno(curriculo_t *V_pesq, int tam_pesq){
+  ano_t *anos;
+
+  anos = criaListaAno();
+
+  for (int i=0; i<tam_pesq ;i++){
+
+  imprimeListaAno(anos);
+    //Percorre conferencias
+    for (int j=0; j<V_pesq[i].tam_eventos ;j++)
+      if ( strcmp(V_pesq[i].V_eventos[j].qualis, "NC") )
+      if ( insereOrdenadoListaAno(anos, V_pesq[i].V_eventos[j].ano,
+           V_pesq[i].V_eventos[j].qualis, 0) )
+        printf("Erro em insereOrdenadoListaAno\n");
+
+    //Percorre artigos
+    for (int j=0; j<V_pesq[i].tam_artigos ;j++)
+      if ( strcmp(V_pesq[i].V_artigos[j].qualis, "NC") )
+      if ( insereOrdenadoListaAno(anos, V_pesq[i].V_artigos[j].ano,
+            V_pesq[i].V_artigos[j].qualis, 1) )
+        printf("Erro em insereOrdenadoListaAno\n");
+
+  } //For de pesquisadores
 
 
+  anos = destroiListaAno(anos);
 
 }
 

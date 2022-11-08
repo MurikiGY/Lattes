@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "formata.h"
 #include "libano.h"
 
 
@@ -15,91 +16,156 @@ ano_t *criaListaAno(){
 
   a->tam = 0;
   a->head = NULL;
+  a->tail = NULL;
 
   return a;
 }
 
 //Desaloca lista de anos
 ano_t *destroiListaAno(ano_t *a){
+  nodo_ano_t *aux = a->head;
 
+  while ( aux != NULL){
+    free(aux->conf);
+    free(aux->per);
+    aux = aux->prox;
+    free(a->head);
+    a->head = aux;
+  }
 
+  free(a);
+
+  return NULL;
 }
 
 
-int criaNodo(nodo_t *pointer, int ano, char *qualis, int option){
+int criaNodo(nodo_ano_t **pointer, int ano, char *qualis, int option){
+  nodo_ano_t *aux;
 
   //Aloca estrutura
-  pointer = malloc( sizeof(nodo_t) );
-  pointer->ano = ano;
-  pointer->conf = malloc ( sizeof(int) * 9 );
-  pointer->per  = malloc ( sizeof(int) * 9 );
+  aux = malloc( sizeof(nodo_ano_t) );
+  aux->ano = ano;
+  aux->conf = malloc ( sizeof(int) * 10 );
+  aux->per  = malloc ( sizeof(int) * 10 );
   
   //Zera vetores
-  memset(pointer->conf, 0, sizeof(int)*9 );
-  memset(pointer->per, 0, sizeof(int)*9 );
+  memset(aux->conf, 0, sizeof(int)*10 );
+  memset(aux->per, 0, sizeof(int)*10 );
 
   if ( option == 0 ){
+
     //Conferencias
-    if ( !strcmp(qualis, "A1") )
-      (pointer->conf[0])++;
-    else if ( !strcmp(qualis, "A2") )
-      (pointer->conf[1])++;
-    else if ( !strcmp(qualis, "A3") )
-      (pointer->conf[2])++;
-    else if ( !strcmp(qualis, "A4") )
-      (pointer->conf[3])++;
-    else if ( !strcmp(qualis, "B1") )
-      (pointer->conf[4])++;
-    else if ( !strcmp(qualis, "B2") )
-      (pointer->conf[5])++;
-    else if ( !strcmp(qualis, "B3") )
-      (pointer->conf[6])++;
-    else if ( !strcmp(qualis, "B4") )
-      (pointer->conf[7])++;
-    else if ( !strcmp(qualis, "C") )
-      (pointer->conf[8])++;
+    (aux->conf[ estrato(qualis) ])++;
+
   } else {
+
     //Artigos
-    if ( !strcmp(qualis, "A1") )
-      (pointer->per[0])++;
-    else if ( !strcmp(qualis, "A2") )
-      (pointer->per[1])++;
-    else if ( !strcmp(qualis, "A3") )
-      (pointer->per[2])++;
-    else if ( !strcmp(qualis, "A4") )
-      (pointer->per[3])++;
-    else if ( !strcmp(qualis, "B1") )
-      (pointer->per[4])++;
-    else if ( !strcmp(qualis, "B2") )
-      (pointer->per[5])++;
-    else if ( !strcmp(qualis, "B3") )
-      (pointer->per[6])++;
-    else if ( !strcmp(qualis, "B4") )
-      (pointer->per[7])++;
-    else if ( !strcmp(qualis, "C") )
-      (pointer->per[8])++;
+    (aux->per[ estrato(qualis) ])++;
+
   }
+
+  *pointer = aux;
 
   return 0;
 }
 
 
-//Insere um artigo ou conferencia de maneira ordenada na lista
+//Insere uma conferencia(0) ou artigo(1) de maneira ordenada na lista
 int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
+  nodo_ano_t *nodo;
 
-  if ( !a->head )
-    return criaNodo(a->head, ano, qualis, option);
-
-  nodo_t *aux = a->head;
-
-  while ( aux->prox != NULL ){
-    if ( aux->ano == ano ){
-      return 0;
-    }
-    aux = aux->prox;
+  //Lista vazia
+  if ( !a->head ){
+    //Configura o nodo
+    nodo = malloc( sizeof(nodo_ano_t) );
+    nodo->ano = ano;
+    nodo->conf = malloc ( sizeof(int) * 10 );
+    nodo->per  = malloc ( sizeof(int) * 10 );
+    nodo->prox = NULL;
+    memset(nodo->conf, 0, sizeof(int) * 10 );
+    memset(nodo->per , 0, sizeof(int) * 10 );
+    if ( option == 0 )
+      (nodo->conf[ estrato(qualis) ])++;
+    else
+      (nodo->per[ estrato(qualis) ])++;
+    a->head = nodo;
+    a->tail = nodo;
+    (a->tam)++;
+    return 0;
   }
 
-  return criaNodo(aux->prox, ano, qualis, option);
+  //percorre lista
+  nodo_ano_t *aux1 = a->head;
+  nodo_ano_t *aux2;
+  while ( aux1->ano < ano && aux1->prox != NULL ){
+    if ( aux1->ano == ano ){
+      if ( option == 0 )
+        (aux1->conf[ estrato(qualis) ])++;
+      else
+        (aux1->per[ estrato(qualis) ])++;
+      return 0;
+    }
+    aux2 = aux1;
+    aux1 = aux1->prox;
+  }
+
+  if ( aux1->ano == ano ){
+    if ( option == 0 )
+      (aux1->conf[ estrato(qualis) ])++;
+    else
+      (aux1->per[ estrato(qualis) ])++;
+    return 0;
+  }
+
+
+  //Cria novo nodo na lista
+  nodo = malloc( sizeof(nodo_ano_t) );
+  nodo->ano = ano;
+  nodo->conf = malloc ( sizeof(int) * 10 );
+  nodo->per  = malloc ( sizeof(int) * 10 );
+  nodo->prox = NULL;
+  memset(nodo->conf, 0, sizeof(int) * 10 );
+  memset(nodo->per, 0, sizeof(int) * 10 );
+  if ( option == 0 )
+    (nodo->conf[ estrato(qualis) ])++;
+  else
+    (nodo->per[ estrato(qualis) ])++;
+
+  if ( !aux1->prox ){
+    //nodo no final
+    aux1->prox = nodo;
+    a->tail = nodo;
+  } else {
+    aux2->prox = nodo;
+    nodo->prox = aux1;
+  }
+
+  (a->tam)++;
+  return 0;
 }
 
 
+//Imprime lista
+void imprimeListaAno(ano_t *a){
+  nodo_ano_t *aux;
+
+  printf("%d\n", a->tam);
+
+  if ( a->tam > 0 ){
+    aux = a->head;
+    while ( aux != NULL ){
+      printf("Ano: %d\n", aux->ano);
+      printf("+---------------------------+\n");
+      printf("| Conferencias | Periodicos |\n");
+      printf("+---------------------------+\n");
+      for (int j=0; j<4 ;j++)
+        printf("| A%d: %-03d      | A%d: %-03d    |\n", j+1, aux->conf[j], j+1, aux->per[j]);
+      for (int j=4; j<8 ;j++)
+        printf("| B%d: %-03d      | B%d: %-03d    |\n", j-3, aux->conf[j], j-3, aux->per[j]);
+      printf("| C : %-03d      | C : %-03d    |\n", aux->conf[8], aux->per[8]);
+      printf("+---------------------------+\n");
+      printf("\n");
+      aux = aux->prox;
+    }
+  }
+}

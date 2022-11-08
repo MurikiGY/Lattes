@@ -1,17 +1,18 @@
 #ifndef _LIBANO_
 #define _LIBANO_
 
-struct nodo {
-  int   ano;      //Ano do nodo
-  int   *conf;    //Vetor de conferencias do ano
-  int   *per;     //vetor de periodicos do ano
-  struct nodo *prox;
+struct nodo_ano {
+  int         ano;      //Ano do nodo
+  int         *conf;    //Vetor de conferencias do ano
+  int         *per;     //vetor de periodicos do ano
+  struct      nodo_ano *prox;
 };
-typedef struct nodo nodo_t;
+typedef struct nodo_ano nodo_ano_t;
 
 struct ano {
-  int     tam;
-  nodo_t  *head;
+  int         tam;
+  nodo_ano_t  *head;
+  nodo_ano_t  *tail;
 };
 typedef struct ano ano_t;
 
