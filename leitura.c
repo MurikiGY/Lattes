@@ -137,6 +137,20 @@ void leEvento(FILE *stream, producao_t *prod){
   prod->titulo = malloc( sizeof(char) * (strlen(s)+1) );
   strncpy(prod->titulo, s, strlen(s)+1);
 
+  //Pega o nome dos autores
+  fscanf(stream, "%s", s);
+  while ( !strstr(s, "<TRABALHOS-EM-EVENTOS") ){
+
+    if ( strstr(s, "NOME-COMPLETO-DO-AUTOR=") ){
+      pegaDados(stream, s);
+      printf("%s\n", s );
+    }
+    fscanf(stream, "%s", s);
+  }
+
+  fseek(stream, -50, SEEK_CUR);
+
+
   free(s);
 }
 
