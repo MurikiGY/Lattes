@@ -196,7 +196,7 @@ void destroiCurriculos(curriculo_t *vetor, int tam){
     for (int j=0; j<vetor[i].tam_eventos ;j++){
       free(vetor[i].V_eventos[j].producao);
       free(vetor[i].V_eventos[j].titulo);
-      free(vetor[i].V_eventos[j].qualis);
+      //free(vetor[i].V_eventos[j].qualis);
     }
     free(vetor[i].V_eventos);
 
@@ -205,7 +205,7 @@ void destroiCurriculos(curriculo_t *vetor, int tam){
     {
       free(vetor[i].V_artigos[k].producao);
       free(vetor[i].V_artigos[k].titulo);
-      free(vetor[i].V_artigos[k].qualis);
+      //free(vetor[i].V_artigos[k].qualis);
     }
     free(vetor[i].V_artigos);
 

@@ -24,10 +24,6 @@ lista_t *listaDestroi(lista_t *l);
 //Insere elemento na lista
 int queue(lista_t *l, char *t);
 
-//Remove elemento da lista
-//Retorna titulo e qualis por parametro
-int dequeue(lista_t *l, char *t);
-
 //Busca string dentro da lista
 int buscaListaIncrementa(lista_t *l, char *t);
 

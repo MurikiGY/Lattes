@@ -1,3 +1,17 @@
+## Logica de bibliotecas:
+file.h
+  //Calcula o numero de arquivos dentro de um diretorio
+  //Calcula o numero de linhas de um arquivo
+
+mystrings.h
+  //Faz malloc e copia a string
+
+
+
+
+
+
+
 ## Arquivo de padroes para lattes.c
 
 Variaveis:  Snake_case

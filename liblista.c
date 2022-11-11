@@ -4,6 +4,7 @@
 
 #include "liblista.h"
 
+
 //Retorna ponteiro de criação da lista
 lista_t *criaLista(){
   lista_t *l;
@@ -17,6 +18,7 @@ lista_t *criaLista(){
   l->tail = NULL;
   return l;
 }
+
 
 ////Desaloca uma lista criada
 lista_t *listaDestroi(lista_t *l){
@@ -35,6 +37,7 @@ lista_t *listaDestroi(lista_t *l){
   free(l);
   return NULL;
 }
+
 
 ////Insere elemento na lista
 int queue(lista_t *l, char *t){
@@ -59,28 +62,6 @@ int queue(lista_t *l, char *t){
   return 0;
 }
 
-////Remove elemento da lista
-////Retorna titulo por parametro e quantidade por retorno
-int dequeue(lista_t *l, char *t){
-  nodo_t *aux;
-  int quant;
-
-  if ( l->tam == 0 )
-    return 0;
-
-  if ( l->tam == 1 )
-    l->tail = NULL;
-
-  t = malloc( sizeof(char)*(strlen(l->head->titulo)+1) );
-  strncpy(t, l->head->titulo, strlen(l->head->titulo)+1);
-  quant = l->head->cntr;
-
-  aux = l->head->prox;
-  free(l->head);
-  l->head = aux;
-  (l->tam)--;
-  return quant;
-}
 
 //Busca string dentro da lista e incrementa cntr se encontrar
 int buscaListaIncrementa(lista_t *l, char *t){

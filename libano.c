@@ -178,8 +178,6 @@ int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
 void imprimeListaAno(ano_t *a){
   nodo_ano_t *aux;
 
-  printf("%d\n", a->tam);
-
   if ( a->tam > 0 ){
     aux = a->head;
     while ( aux != NULL ){

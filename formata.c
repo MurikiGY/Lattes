@@ -34,7 +34,9 @@ void pegaDados(FILE *stream, char *s){
 //Retorna um inteiro de acordo com a string de qualidade
 int estrato(char *qualis){
 
-  if ( !strcmp(qualis, "A1") )
+  if ( !qualis )
+    return 9;
+  else if ( !strcmp(qualis, "A1") )
     return 0;
   else if ( !strcmp(qualis, "A2") )
     return 1;
@@ -52,7 +54,5 @@ int estrato(char *qualis){
     return 7;
   else if ( !strcmp(qualis, "C") )
     return 8;
-
-  return 9;
 }
 

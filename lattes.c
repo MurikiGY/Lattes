@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include <dirent.h>
 #include <getopt.h>
 #include <locale.h>
@@ -9,6 +10,13 @@
 #include "formata.h"
 #include "liblista.h"
 #include "libano.h"
+
+#define DIST 3    //Parametro da distancia de edição de strings
+
+void strtolow (char *s){
+  for (int i=0; i<strlen(s) ;i++)
+    s[i] = tolower(s[i]);
+}
 
 //Retorna o numero de arquivos dentro de um diretorio
 int nfiles (DIR *dirstream){
@@ -92,8 +100,9 @@ void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
 ///////////////////////////////////
 /// Edit Distance
 ////////////////////////////////////
-int distance (char* word1, int len1, char* word2, int len2)
-{
+int distance (char* word1, char* word2){
+  int len1 = strlen(word1);
+  int len2 = strlen(word2);
 
   int matrix[len1 + 1][len2 + 1];
   int i;
@@ -104,22 +113,19 @@ int distance (char* word1, int len1, char* word2, int len2)
   for (i = 0; i <= len2; i++)
     matrix[0][i] = i;
 
-  for (i = 1; i <= len1; i++)
-  {
+  for (i = 1; i <= len1; i++){
     int j;
     char c1;
 
     c1 = word1[i-1];
-    for (j = 1; j <= len2; j++)
-    {
+    for (j = 1; j <= len2; j++){
       char c2;
 
       c2 = word2[j-1];
       if (c1 == c2)
         matrix[i][j] = matrix[i-1][j-1];
 
-      else
-      {
+      else{
         int delete;
         int insert;
         int substitute;
@@ -151,104 +157,52 @@ void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, 
   for(int i=0; i<tam_pesq ;i++){
 
     //Percorre eventos
-    for(int j=0; j<V_pesq[i].tam_eventos ;j++){
-
+    for(int j=0; j<V_pesq[i].tam_eventos ;j++)
       //Percorre vetor de conferencias
       for(int l=0; l<tam_conf ;l++){
-        printf("\rClassificando conferencias de %s", V_pesq[i].pesquisador);
-        fflush(stdout);
-
+        //printf("\rAnalisando conferencias de %s", V_pesq[i].pesquisador);
+        //fflush(stdout);
         V_pesq[i].V_eventos[j].qualis = NULL;
-        if ( distance(V_pesq[i].V_eventos[j].titulo, strlen(V_pesq[i].V_eventos[j].titulo), V_conf[l].nome, strlen(V_conf[l].nome)) < 15 ){
-          V_pesq[i].V_eventos[j].qualis = malloc( sizeof(char) * (strlen(V_conf[l].tipo)+2) );
-          strncpy(V_pesq[i].V_eventos[j].qualis, V_conf[l].tipo, strlen(V_conf[l].tipo)+1 );
+        if ( distance(V_pesq[i].V_eventos[j].titulo, V_conf[l].nome) < strlen(V_pesq[i].V_eventos[j].titulo)/DIST ){
+          V_pesq[i].V_eventos[j].qualis = V_conf[l].tipo;
           break;
         }
-
       } //For de conferencias
 
-      if ( !V_pesq[i].V_eventos[j].qualis ){
-        V_pesq[i].V_eventos[j].qualis = malloc( sizeof(char) * (strlen("NC")+1) );
-        strncpy(V_pesq[i].V_eventos[j].qualis, "NC", strlen("NC")+1 );
-      }
-
-    } //Percorre eventos
-
-    printf("\n");
-
     //Percorre artigos
-    for(int k=0; k<V_pesq[i].tam_artigos ;k++){
+    for(int k=0; k<V_pesq[i].tam_artigos ;k++)
 
       //Percorre vetor de artigos
       for(int l=0; l<tam_per ;l++){
-        printf("\rClassificando Artigos de %s", V_pesq[i].pesquisador);
-        fflush(stdout);
-
+        //printf("\rAnalisando artigos de %s", V_pesq[i].pesquisador);
+        //fflush(stdout);
         V_pesq[i].V_artigos[k].qualis = NULL;
-        if ( distance(V_pesq[i].V_artigos[k].titulo, strlen(V_pesq[i].V_artigos[k].titulo), V_per[l].nome, strlen(V_per[l].nome)) < 15 ){
-          V_pesq[i].V_artigos[k].qualis = malloc( sizeof(char) * (strlen(V_per[l].tipo)+2) );
-          strncpy(V_pesq[i].V_artigos[k].qualis, V_per[l].tipo, strlen(V_per[l].tipo)+1 );
+        if ( distance(V_pesq[i].V_artigos[k].titulo, V_per[l].nome) < strlen(V_pesq[i].V_artigos[k].titulo)/DIST ){
+          V_pesq[i].V_artigos[k].qualis = V_per[l].tipo;
           break;
         }
-
       } //For de artigos
-
-      if ( !V_pesq[i].V_artigos[k].qualis ){
-        V_pesq[i].V_artigos[k].qualis = malloc( sizeof(char) * (strlen("NC")+1) );
-        strncpy(V_pesq[i].V_artigos[k].qualis, "NC", strlen("NC")+1 );
-      }
-
-    } //Percorre artigos
-
-    printf("\n");
 
   } //Percorre pesquisadores
 
 }
 
 
-static int comparaAno(const void *p1, const void *p2){
-  return ((producao_t *)p1)->ano - ((producao_t *)p2)->ano;
+static int comparaTitulo(const void *p1, const void *p2){
+  return strcmp( ((producao_t *)p1)->titulo, ((producao_t *)p2)->titulo );
 }
 
 
-void ordenaDados(curriculo_t *vetor, int tam){
+static int comparaClasse(const void *p1, const void *p2){
+  return strcmp( ((classe_t *)p1)->nome, ((classe_t *)p2)->nome );
+}
+
+
+void ordenaCurriculos(curriculo_t *vetor, int tam){
   for(int i=0; i<tam ;i++){
-    qsort(vetor[i].V_eventos, vetor[i].tam_eventos, sizeof(producao_t), comparaAno);
-    qsort(vetor[i].V_artigos, vetor[i].tam_artigos, sizeof(producao_t), comparaAno);
+    qsort(vetor[i].V_eventos, vetor[i].tam_eventos, sizeof(producao_t), comparaTitulo);
+    qsort(vetor[i].V_artigos, vetor[i].tam_artigos, sizeof(producao_t), comparaTitulo);
   }
-}
-
-
-int menu (){
-  int numero;
-  int bol = 0;
-
-  printf("+-----------------------------------------------------------+\n");
-  printf("| Opções de entrada:                                        |\n");
-  printf("| 1 - Periodicos globais                                    |\n");
-  printf("| 2 - Conferencias globais                                  |\n");
-  printf("| 3 - Pesquisadores                                         |\n");
-  printf("| 4 - Anual                                                 |\n");
-  printf("| 5 - Classificações em C                                   |\n");
-  printf("| 6 - Não classificados                                     |\n");
-  printf("| 7 - Sair                                                  |\n");
-  printf("+-----------------------------------------------------------+\n");
-  printf("Entrada: ");
-
-  while ( !bol ){
-    scanf("%d", &numero);
-    if ( numero > 0 && numero < 8)
-      bol = 1;
-    else{
-      printf("Operação inválida, tente novamente\n");
-      printf("Entrada: ");
-    }
-  }
-
-  printf("\e[H\e[2J"); 
-
-  return numero;
 }
 
 
@@ -263,25 +217,20 @@ void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao){
 
   //Percorre pesquisadores
   for (int i=0; i<tam_pesq ;i++){
-    
     if ( opcao == 1 ){
-
       //Percorre eventos
       for (int j=0; j<V_pesq[i].tam_eventos ;j++)
-          if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_eventos[j].qualis) ],
-               V_pesq[i].V_eventos[j].titulo) )
-              printf("Erro em buscaListaIncrementa\n");
- 
+        if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_eventos[j].qualis) ],
+              V_pesq[i].V_eventos[j].titulo) )
+          printf("Erro em buscaListaIncrementa\n");
     } else {
       //Percorre artigos
       for (int j=0; j<V_pesq[i].tam_artigos ;j++)
-          if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_artigos[j].qualis) ],
-               V_pesq[i].V_artigos[j].titulo) )
-              printf("Erro em buscaListaIncrementa\n");
-
+        if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_artigos[j].qualis) ],
+              V_pesq[i].V_artigos[j].titulo) )
+          printf("Erro em buscaListaIncrementa\n");
     } //If opcao
   } //For pesquisadores
-
 
   //Impressao de dados
   for (int i=0; i<4 ;i++){
@@ -308,35 +257,46 @@ void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao){
 void calculaPesquisador(curriculo_t *V_pesq, int tam_pesq){
   int per[10] = {};
   int conf[10] = {};
+  int count1 = 0;
+  int count2 = 0;
 
   //Percorre pesquisadores
   for (int i=0; i<tam_pesq ;i++){
-    
+
     //percorre conferencias
-    for (int j=0; j<V_pesq[i].tam_eventos ;j++)
+    for (int j=0; j<V_pesq[i].tam_eventos ;j++){
       (conf[ estrato(V_pesq[i].V_eventos[j].qualis) ])++;
+      if (V_pesq[i].V_eventos[j].qualis != NULL)
+        count1++;
+    }
 
     //percorre periodicos
-    for (int j=0; j<V_pesq[i].tam_artigos ;j++)
+    for (int j=0; j<V_pesq[i].tam_artigos ;j++){
       (per[ estrato(V_pesq[i].V_artigos[j].qualis) ])++;
-
+      if (V_pesq[i].V_artigos[j].qualis != NULL)
+        count2++;
+    }
+    
     //Impressão
     printf("Pesquisador: %s\n", V_pesq[i].pesquisador);
     printf("+---------------------------+\n");
     printf("| Conferencias | Periodicos |\n");
     printf("+---------------------------+\n");
     for (int j=0; j<4 ;j++)
-      printf("| A%d: %-03d      | A%d: %-03d    |\n", j+1, conf[j], j+1, per[j]);
+    printf("| A%d: %-03d      | A%d: %-03d    |\n", j+1, conf[j], j+1, per[j]);
     for (int j=4; j<8 ;j++)
-      printf("| B%d: %-03d      | B%d: %-03d    |\n", j-3, conf[j], j-3, per[j]);
+    printf("| B%d: %-03d      | B%d: %-03d    |\n", j-3, conf[j], j-3, per[j]);
     printf("| C : %-03d      | C : %-03d    |\n", conf[8], per[8]);
-    printf("| NC: %-03d      | NC: %-03d    |\n", conf[9], per[9]);
     printf("+---------------------------+\n");
+
+    printf("Total de conferências: %d\n", count1);
+    printf("Total de periodicos: %d\n", count2);
+    count1 = 0;
+    count2 = 0;
 
     //Zera vetores
     memset(conf, 0, 10*sizeof(int));
     memset(per, 0, 10*sizeof(int));
-
     printf("\n");
 
   } //For de pesquisadores
@@ -352,53 +312,54 @@ void calculaEstratoCNC(curriculo_t *V_pesq, int tam_pesq, int option){
   per_lista = criaLista();
 
   for (int i=0; i<tam_pesq ;i++){
-    
+
     if ( option == 0 ){
-
       //Percorre eventos
       for (int j=0; j<V_pesq[i].tam_eventos ;j++)
-        if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "C") )
+        if ( estrato(V_pesq[i].V_eventos[j].qualis) == 8 )
           if ( buscaListaIncrementa(conf_lista, V_pesq[i].V_eventos[j].titulo) )
             printf("Erro na funcao buscaListaIncrementa\n");
-  
       //Percorre artigos
       for (int j=0; j<V_pesq[i].tam_artigos ;j++)
-        if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "C") )
+        if ( estrato(V_pesq[i].V_artigos[j].qualis) == 8 )
           if ( buscaListaIncrementa(per_lista, V_pesq[i].V_artigos[j].titulo) )
             printf("Erro na funcao buscaListaIncrementa\n");
-
     } else {
-
       //Percorre eventos
       for (int j=0; j<V_pesq[i].tam_eventos ;j++)
-        if ( !strcmp(V_pesq[i].V_eventos[j].qualis, "NC") )
+        if ( estrato(V_pesq[i].V_eventos[j].qualis) == 9 )
           if ( buscaListaIncrementa(conf_lista, V_pesq[i].V_eventos[j].titulo) )
             printf("Erro na funcao buscaListaIncrementa\n");
-  
       //Percorre artigos
       for (int j=0; j<V_pesq[i].tam_artigos ;j++)
-        if ( !strcmp(V_pesq[i].V_artigos[j].qualis, "NC") )
+        if ( estrato(V_pesq[i].V_artigos[j].qualis) == 9 )
           if ( buscaListaIncrementa(per_lista, V_pesq[i].V_artigos[j].titulo) )
             printf("Erro na funcao buscaListaIncrementa\n");
-
     }
   }
 
-  if ( option == 0)
+  if ( option == 0){
     printf("+----Imprimindo conferencias classificadas em C-----+\n");
-  else
-    printf("+-----Imprimindo conferencias não encontrados-------+\n");
-  listaImprime(conf_lista);
-
-  if ( option == 0)
+    listaImprime(conf_lista);
+    printf("Numero de conferencias em C: %d\n", conf_lista->tam);
+    printf("\n");
     printf("+-----Imprimindo periodicos classificados em C------+\n");
-  else
+    listaImprime(per_lista);
+    printf("Numero de periodicos em C: %d\n", per_lista->tam);
+    printf("\n");
+  } else {
+    printf("+-----Imprimindo conferencias não encontrados-------+\n");
+    listaImprime(conf_lista);
+    printf("Numero de conferencias nao encontradas: %d\n", conf_lista->tam);
+    printf("\n");
     printf("+-------Imprimindo periodicos não encontrados-------+\n");
-  listaImprime(per_lista);
+    listaImprime(per_lista);
+    printf("Numero de periodicos nao encontrados: %d\n", per_lista->tam);
+    printf("\n");
+  }
 
   listaDestroi(conf_lista);
   listaDestroi(per_lista);
-
 }
 
 
@@ -407,26 +368,26 @@ void calculaAno(curriculo_t *V_pesq, int tam_pesq){
 
   anos = criaListaAno();
 
+  //Percorre pesquisadores
   for (int i=0; i<tam_pesq ;i++){
 
     //Percorre conferencias
     for (int j=0; j<V_pesq[i].tam_eventos ;j++)
-      if ( strcmp(V_pesq[i].V_eventos[j].qualis, "NC") )
-      if ( insereOrdenadoListaAno(anos, V_pesq[i].V_eventos[j].ano,
-           V_pesq[i].V_eventos[j].qualis, 0) )
-        printf("Erro em insereOrdenadoListaAno\n");
+      if ( V_pesq[i].V_eventos[j].qualis != NULL )
+        if ( insereOrdenadoListaAno(anos, V_pesq[i].V_eventos[j].ano,
+              V_pesq[i].V_eventos[j].qualis, 0) )
+          printf("Erro em insereOrdenadoListaAno\n");
 
     //Percorre artigos
     for (int j=0; j<V_pesq[i].tam_artigos ;j++)
-      if ( strcmp(V_pesq[i].V_artigos[j].qualis, "NC") )
-      if ( insereOrdenadoListaAno(anos, V_pesq[i].V_artigos[j].ano,
-            V_pesq[i].V_artigos[j].qualis, 1) )
-        printf("Erro em insereOrdenadoListaAno\n");
+      if ( V_pesq[i].V_artigos[j].qualis != NULL )
+        if ( insereOrdenadoListaAno(anos, V_pesq[i].V_artigos[j].ano,
+              V_pesq[i].V_artigos[j].qualis, 1) )
+          printf("Erro em insereOrdenadoListaAno\n");
 
   } //For de pesquisadores
 
   imprimeListaAno(anos);
-
   anos = destroiListaAno(anos);
 
 }
@@ -434,7 +395,6 @@ void calculaAno(curriculo_t *V_pesq, int tam_pesq){
 
 int main (int argc, char **argv){
   DIR         *dirstream;               //Variavel de stream do diretorio
-  char        *locale;                  //Configurar em UTF-8
   char        periodicos[FILENAME];     //Nome do arquivo de periodicos
   char        conferencias[FILENAME];   //Nome do arquivo de conferencias
   classe_t    *V_per;                   //Vetor de classes periodicos
@@ -445,12 +405,8 @@ int main (int argc, char **argv){
   int         tam_pesq;                 //Tamanho do vetor de pesquisadores
   int option;
 
-
-  locale = setlocale(LC_ALL, "");
-
   //Teste de parametros
-  while ( (option = getopt(argc, argv, "d:p:c:")) != -1){
-
+  while ( (option = getopt(argc, argv, "d:p:c:")) != -1)
     switch (option){
       case 'd':
         break;
@@ -465,8 +421,6 @@ int main (int argc, char **argv){
         exit(1);
     }
 
-  }
-
   //Abertura da stream do diretorio
   dirstream = opendir(argv[2]);
   if (!dirstream){
@@ -480,6 +434,8 @@ int main (int argc, char **argv){
     fprintf(stderr, "Erro na leitura dos periodicos\n");
     exit(3);
   }
+  for (int i=0; i<tam_per ;i++)
+    strtolow(V_per[i].nome);
 
   //Inicializa vetor de conferencias
   V_conf = leQualificativos(conferencias, &tam_conf);
@@ -488,6 +444,8 @@ int main (int argc, char **argv){
     destroiClasse(V_per, tam_per);
     exit(4);
   }
+  for (int i=0; i<tam_conf ;i++)
+    strtolow(V_conf[i].nome);
 
   //Inicializa vetor de pesquisadores
   tam_pesq = nfiles(dirstream);
@@ -501,52 +459,45 @@ int main (int argc, char **argv){
 
   //Sumariza curriculos
   ledados(dirstream, argv[2], V_pesq, tam_pesq);
+  for (int i=0; i<tam_pesq ;i++){
+    for (int j=0; j<V_pesq[i].tam_eventos ;j++)
+      strtolow(V_pesq[i].V_eventos[j].titulo);
+    for (int j=0; j<V_pesq[i].tam_artigos ;j++)
+      strtolow(V_pesq[i].V_artigos[j].titulo);
+  }
 
-  //Ordena periodicos e eventos por ano
-  ordenaDados(V_pesq, tam_pesq);
+  //Ordena periodicos e eventos
+//  ordenaCurriculos(V_pesq, tam_pesq);
 
   //Atribui os qualitativos de periodicos e conferencias aos pesquisadores
   qualifica(V_pesq, tam_pesq, V_per, tam_per, V_conf, tam_conf);
 
-  printf("\e[H\e[2J"); 
-  option = menu();
+  printf("\n");
+  printf("+--------------------------------------+\n");
+  printf("|    Imprimindo Periodicos Globais     |\n");
+  printf("+--------------------------------------+\n");
+  calculaGlobal(V_pesq, tam_pesq, 0);
+  printf("+--------------------------------------+\n");
+  printf("|   Imprimindo Conferencias Globais    |\n");
+  printf("+--------------------------------------+\n");
+  calculaGlobal(V_pesq, tam_pesq, 1);
+  printf("+--------------------------------------+\n");
+  printf("|            Pesquisadores             |\n");
+  printf("+--------------------------------------+\n");
+  calculaPesquisador(V_pesq, tam_pesq);
+  printf("+--------------------------------------+\n");
+  printf("|                Anual                 |\n");
+  printf("+--------------------------------------+\n");
+  calculaAno(V_pesq, tam_pesq);
+  printf("+--------------------------------------+\n");
+  printf("|      Periodicos e Conferencias C     |\n");
+  printf("+--------------------------------------+\n");
+  calculaEstratoCNC(V_pesq, tam_pesq, 0);
+  printf("+--------------------------------------+\n");
+  printf("|     Periodicos e Conferencias NC     |\n");
+  printf("+--------------------------------------+\n");
+  calculaEstratoCNC(V_pesq, tam_pesq, 1);
 
-  while ( option != 7 ){
-    if ( option == 1 ){
-      printf("+---------------------------------------------------+\n");
-      printf("| Calculando periodicos globais                     |\n");
-      printf("+---------------------------------------------------+\n");
-      calculaGlobal(V_pesq, tam_pesq, 0);
-    } else if ( option == 2 ){
-      printf("+---------------------------------------------------+\n");
-      printf("| Calculando conferencias globais                   |\n");
-      printf("+---------------------------------------------------+\n");
-      calculaGlobal(V_pesq, tam_pesq, 1);
-    } else if ( option == 3 ){
-      printf("+---------------------------------------------------+\n");
-      printf("| Calculando estratos dos pesquisadores             |\n");
-      printf("+---------------------------------------------------+\n");
-      calculaPesquisador(V_pesq, tam_pesq);
-    } else if ( option == 4 ){
-      printf("+---------------------------------------------------+\n");
-      printf("| Calculando estratos por ano                       |\n");
-      printf("+---------------------------------------------------+\n");
-      calculaAno(V_pesq, tam_pesq);
-    } else if ( option == 5 ){
-      printf("+---------------------------------------------------+\n");
-      printf("| Calculando estratos de nivel C                    |\n");
-      printf("+---------------------------------------------------+\n");
-      calculaEstratoCNC(V_pesq, tam_pesq, 0);
-    } else if ( option == 6 ){
-      printf("+---------------------------------------------------+\n");
-      printf("| Calculando estratos não encontrados               |\n");
-      printf("+---------------------------------------------------+\n");
-      calculaEstratoCNC(V_pesq, tam_pesq, 1);
-    }
-    option = menu();
-  }
-
-    
   //Desaloca vetores
   destroiCurriculos(V_pesq, tam_pesq);
   destroiClasse(V_per, tam_per);
