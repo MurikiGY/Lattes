@@ -7,21 +7,9 @@
 #include "formata.h"
 
 
-// Delay de execucao
-void delay(int number_of_seconds){
-  //Converting time into milli_seconds
-  int milli_seconds = 1000 * number_of_seconds;
-
-  // Storing start time
-  clock_t start_time = clock();
-
-  // looping till required time is not achieved
-  while (clock() < start_time + milli_seconds);
-}
-
 
 //Le strings em um arquivo e as retorna em um vetor
-classe_t *leQualificativos(char *filename, int *tam){
+classe_t *leQualitativos(char *filename, int *tam){
   FILE      *filestream;
   classe_t  *vetor;
   int       count = 0;
@@ -136,20 +124,6 @@ void leEvento(FILE *stream, producao_t *prod){
 
   prod->titulo = malloc( sizeof(char) * (strlen(s)+1) );
   strncpy(prod->titulo, s, strlen(s)+1);
-
-  //Pega o nome dos autores
-  fscanf(stream, "%s", s);
-  while ( !strstr(s, "<TRABALHOS-EM-EVENTOS") ){
-
-    if ( strstr(s, "NOME-COMPLETO-DO-AUTOR=") ){
-      pegaDados(stream, s);
-      printf("%s\n", s );
-    }
-    fscanf(stream, "%s", s);
-  }
-
-  fseek(stream, -50, SEEK_CUR);
-
 
   free(s);
 }

@@ -4,6 +4,8 @@
 #define STRSIZE 1024    //Tam do buffer de leitura
 #define FILENAME 100    //Tam do nome dos arquivos de period. e conf.
 
+#include <stdio.h>
+
 struct classes {
   char  *nome;          //Nome da classe
   char  *tipo;          //A1, A2, ... B4 ou C
@@ -28,11 +30,8 @@ struct curriculo {
 typedef struct curriculo curriculo_t;
 
 
-//Delay de execucao
-void delay(int number_of_seconds);
-
 //Le strings em um arquivo e as retorna num vetor de classe
-classe_t *leQualificativos(char *filename, int *tam);
+classe_t *leQualitativos(char *filename, int *tam);
 
 //Calcula a quantidade de artigos e eventos
 void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo);

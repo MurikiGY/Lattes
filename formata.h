@@ -1,6 +1,8 @@
 #ifndef _FORMATA_
 #define _FORMATA_
 
+#include <stdio.h>
+
 //Le o conteudo de uma tag
 void pegaDados(FILE *stream, char *s);
 
