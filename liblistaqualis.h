@@ -1,5 +1,5 @@
-#ifndef _LIBLISTA_
-#define _LIBLISTA_
+#ifndef _LIBLISTAQUALIS_
+#define _LIBLISTAQUALIS_
 
 struct nodo {
   char    *titulo;    //String da producao

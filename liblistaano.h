@@ -1,5 +1,5 @@
-#ifndef _LIBANO_
-#define _LIBANO_
+#ifndef _LIBLISTAANO_
+#define _LIBLISTAANO_
 
 struct nodo_ano {
   int         ano;      //Ano do nodo

@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "formata.h"
-#include "libano.h"
+#include "liblistaano.h"
 
 
 //Cria lista de anos
@@ -39,80 +39,52 @@ ano_t *destroiListaAno(ano_t *a){
 }
 
 
-int criaNodo(nodo_ano_t **pointer, int ano, char *qualis, int option){
-  nodo_ano_t *aux;
+nodo_ano_t *criaNodo(int ano, char *qualis, int option){
+  nodo_ano_t *nodo;
 
   //Aloca estrutura
-  aux = malloc( sizeof(nodo_ano_t) );
-  aux->ano = ano;
-  aux->conf = malloc ( sizeof(int) * 10 );
-  aux->per  = malloc ( sizeof(int) * 10 );
+  nodo = malloc( sizeof(nodo_ano_t) );
+  if ( !nodo ){
+    fprintf(stderr, "Erro de criacao de nodo ano\n");
+    return NULL;}
+  nodo->ano = ano;
+  nodo->conf = malloc ( sizeof(int) * 10 );
+  nodo->per  = malloc ( sizeof(int) * 10 );
+  nodo->prox = NULL;
   
   //Zera vetores
-  memset(aux->conf, 0, sizeof(int)*10 );
-  memset(aux->per, 0, sizeof(int)*10 );
+  memset(nodo->conf, 0, sizeof(int)*10 );
+  memset(nodo->per, 0, sizeof(int)*10 );
 
   if ( option == 0 ){
-
     //Conferencias
-    (aux->conf[ estrato(qualis) ])++;
-
+    (nodo->conf[ estrato(qualis) ])++;
   } else {
-
     //Artigos
-    (aux->per[ estrato(qualis) ])++;
-
+    (nodo->per[ estrato(qualis) ])++;
   }
 
-  *pointer = aux;
-
-  return 0;
+  return nodo;
 }
 
 
 //Insere uma conferencia(0) ou artigo(1) de maneira ordenada na lista
 int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
   nodo_ano_t *nodo;
-
   nodo_ano_t *aux1, aux2;
 
+  //Insere primeiro nodo na lista
   if ( a->tam == 0 ){
-
-    //Configura o nodo
-    nodo = malloc( sizeof(nodo_ano_t) );
-    nodo->ano = ano;
-    nodo->conf = malloc ( sizeof(int) * 10 );
-    nodo->per  = malloc ( sizeof(int) * 10 );
-    nodo->prox = NULL;
-    memset(nodo->conf, 0, sizeof(int) * 10 );
-    memset(nodo->per , 0, sizeof(int) * 10 );
-    if ( option == 0 )
-      (nodo->conf[ estrato(qualis) ])++;
-    else
-      (nodo->per[ estrato(qualis) ])++;
-
+    nodo = criaNodo(ano, qualis, option);
     a->head = nodo;
     a->tail = nodo;
     (a->tam)++;
     return 0;
   } //lista vazia
 
-  //Insere inicio
+  //Insere antes do primeiro nodo da lista
   if ( ano < a->head->ano ){
-
-    //Configura o nodo
-    nodo = malloc( sizeof(nodo_ano_t) );
-    nodo->ano = ano;
-    nodo->conf = malloc ( sizeof(int) * 10 );
-    nodo->per  = malloc ( sizeof(int) * 10 );
-    nodo->prox = NULL;
-    memset(nodo->conf, 0, sizeof(int) * 10 );
-    memset(nodo->per , 0, sizeof(int) * 10 );
-    if ( option == 0 )
-      (nodo->conf[ estrato(qualis) ])++;
-    else
-      (nodo->per[ estrato(qualis) ])++;
-
+    nodo = criaNodo(ano, qualis, option);
     nodo->prox = a->head;
     a->head = nodo;
     (a->tam)++;
@@ -120,17 +92,15 @@ int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
 
   } else {
 
+    //Percorre lista
     nodo_ano_t *aux1 = a->head;
     nodo_ano_t *aux2;
-    
-    //Ajusta ponteiros
     while ( aux1->ano < ano && aux1->prox != NULL){
       aux2 = aux1;
       aux1 = aux1->prox;
     }
 
     if ( aux1->ano == ano ){
-
       //Incrementa nodo
       if ( option == 0 )
         (aux1->conf[ estrato(qualis) ])++;
@@ -139,22 +109,9 @@ int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
       return 0;
 
     } else {
-
-      //Configura o nodo
-      nodo = malloc( sizeof(nodo_ano_t) );
-      nodo->ano = ano;
-      nodo->conf = malloc ( sizeof(int) * 10 );
-      nodo->per  = malloc ( sizeof(int) * 10 );
-      nodo->prox = NULL;
-      memset(nodo->conf, 0, sizeof(int) * 10 );
-      memset(nodo->per , 0, sizeof(int) * 10 );
-      if ( option == 0 )
-        (nodo->conf[ estrato(qualis) ])++;
-      else
-        (nodo->per[ estrato(qualis) ])++;
+      nodo = criaNodo(ano, qualis, option);
 
       if ( ano > aux1->ano ){
-
         //Insere no final
         aux1->prox = nodo;
         a->tail = nodo;
@@ -164,12 +121,10 @@ int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
         aux2->prox = nodo;
 
       }
+
       (a->tam)++;
-
     } //Insere dados
-
   } //Insere inicio
-
   return 0;
 }
 

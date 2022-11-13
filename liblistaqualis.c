@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "liblista.h"
+#include "liblistaqualis.h"
 
 
 //Retorna ponteiro de criação da lista

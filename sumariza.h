@@ -3,8 +3,8 @@
 
 #include "leitura.h"
 #include "formata.h"
-#include "liblista.h"
-#include "libano.h"
+#include "liblistaqualis.h"
+#include "liblistaano.h"
 
 
 void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao);
