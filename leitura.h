@@ -6,12 +6,6 @@
 
 #include <stdio.h>
 
-struct classes {
-  char  *nome;          //Nome da classe
-  char  *tipo;          //A1, A2, ... B4 ou C
-};
-typedef struct classes classe_t;
-
 struct producao {
   char  *producao;      //Titulo da producao
   char  *titulo;        //periodico ou evento(conferencia)
@@ -29,10 +23,6 @@ struct curriculo {
 };
 typedef struct curriculo curriculo_t;
 
-
-//Le strings em um arquivo e as retorna num vetor de classe
-classe_t *leQualitativos(char *filename, int *tam);
-
 //Calcula a quantidade de artigos e eventos
 void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo);
 
@@ -45,14 +35,8 @@ void leEvento(FILE *stream, producao_t *prod);
 //Le dados de um artigo
 void leArtigo(FILE *stream, producao_t *prod);
 
-//Desaloca vetor de classes
-void destroiClasse(classe_t *vetor, int tam);
-
 //Desaloca vetor de curriculos
 void destroiCurriculos(curriculo_t *vetor, int tam);
-
-//Imprime vetor de classe
-void imprimeClasse(classe_t *vetor, int tam);
 
 //Imprime vetor de curriculos
 void imprimeCurriculo(curriculo_t *vetor, int tam);

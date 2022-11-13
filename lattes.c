@@ -6,6 +6,7 @@
 #include <getopt.h>
 #include <locale.h>
 
+#include "qualis.h"
 #include "leitura.h"
 #include "formata.h"
 #include "sumariza.h"
@@ -263,6 +264,7 @@ int main (int argc, char **argv){
   //Atribui os qualitativos de periodicos e conferencias aos pesquisadores
   qualifica(V_pesq, tam_pesq, V_per, tam_per, V_conf, tam_conf);
 
+  //Calcula os dados coletados
   sumarizaDados(V_pesq, tam_pesq);
 
   //Desaloca vetores
