@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "sumariza.h"
 
 void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao){
@@ -188,6 +184,15 @@ void calculaEstratoCNC(curriculo_t *V_pesq, int tam_pesq, int option){
   listaDestroi(per_lista);
 }
 
+void calculaCoautorias(curriculo_t *V_pesq, int tam_pesq){
+
+  for (int i=0; i<tam_pesq ;i++){
+    printf("Imprimindo coautores de %s\n", V_pesq[i].pesquisador);
+    imprimeListaAutor(V_pesq[i].coautores);
+    printf("\n");
+  }
+}
+
 
 void sumarizaDados (curriculo_t *V_pesq, int tam_pesq){
 
@@ -216,6 +221,10 @@ void sumarizaDados (curriculo_t *V_pesq, int tam_pesq){
   printf("|     Periodicos e Conferencias NC     |\n");
   printf("+--------------------------------------+\n");
   calculaEstratoCNC(V_pesq, tam_pesq, 1);
+  printf("+--------------------------------------+\n");
+  printf("|         Lista de coautorias          |\n");
+  printf("+--------------------------------------+\n");
+  calculaCoautorias(V_pesq, tam_pesq);
 
 }
 

@@ -1,10 +1,18 @@
 #ifndef _SUMARIZA_
 #define _SUMARIZA_
 
-#include "leitura.h"
-#include "formata.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "qualis.h"
+#include "pesquisador.h"
 #include "liblistaqualis.h"
 #include "liblistaano.h"
+
+#define RED  "\x1B[31m"
+#define BLU  "\x1B[34m"
+#define DFT  "\x1B[0m"
 
 
 void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao);

@@ -1,6 +1,10 @@
 #ifndef _LIBLISTAQUALIS_
 #define _LIBLISTAQUALIS_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 struct nodo {
   char    *titulo;    //String da producao
   int     cntr;       //Quantidade encontrada

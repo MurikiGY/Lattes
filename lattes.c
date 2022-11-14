@@ -1,101 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <dirent.h>
 #include <getopt.h>
-#include <locale.h>
 
 #include "qualis.h"
-#include "leitura.h"
-#include "formata.h"
+#include "pesquisador.h"
 #include "sumariza.h"
+#include "libarquivos.h"
+#include "libstring.h"
 
 #define DIST 3    //Parametro da distancia de edição de strings
-
-void strtolow (char *s){
-  for (int i=0; i<strlen(s) ;i++)
-    s[i] = tolower(s[i]);
-}
-
-//Retorna o numero de arquivos dentro de um diretorio
-int numberFiles (DIR *dirstream){
-  struct dirent   *entry;     //Estrutura do dirent
-  int             tam = 0;    //Contador do numero de arquivos
-
-  //Loop de contagem de arquivos
-  while ( entry = readdir(dirstream) )
-    if (entry->d_type == DT_REG)
-      tam++;
-
-  //Retorna o ponteiro para o inicio do diretorio
-  rewinddir(dirstream);
-
-  return tam;
-}
-
-
-void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
-  struct dirent   *entry;         //Estrutura do dirent dara o dirstream
-  FILE            *filestream;    //Stream de acesso a arquivo
-  int i=0;  //Contador do vetor do pesquisador
-  int j=0;  //Contador do vetor de eventos para cada pesquisador
-  int k=0;  //Contador do vetor de artigos para cada pesquisador
-
-
-  //Iteração sobre o diretorio
-  while ( entry = readdir(dirstream) )
-    if ( entry->d_type == DT_REG ){
-
-      char path[strlen(dir) + strlen(entry->d_name) + 2];
-      snprintf(path, strlen(dir) + strlen(entry->d_name) + 1,
-          "%s\%s", dir, entry->d_name);
-
-      //Leitura dos arquivos
-      filestream = fopen(path, "r");
-      if (filestream){
-
-        //Le dados do arquivo
-
-        int cnt_evento, cnt_artigo;
-        calcArtigoEvento(filestream, &cnt_evento, &cnt_artigo);
-        V_pesq[i].tam_eventos = cnt_evento;
-        V_pesq[i].tam_artigos = cnt_artigo;
-        V_pesq[i].V_eventos = malloc( sizeof(producao_t) * cnt_evento );
-        V_pesq[i].V_artigos = malloc( sizeof(producao_t) * cnt_artigo );
-
-        //Busca o nome do pesquisador
-        leNome(filestream, &V_pesq[i]);
-        printf("Buscando dados do pesquisador %s\n", V_pesq[i].pesquisador);
-
-        char *strng = malloc( sizeof(char) * STRSIZE );
-        while ( fscanf(filestream, "%s", strng) != EOF ){
-
-          //Le evento
-          if ( strstr(strng, "<TRABALHO-EM-EVENTOS") )
-            leEvento(filestream, &V_pesq[i].V_eventos[j++]);
-
-          //Le artigo
-          if ( strstr(strng, "<ARTIGO-PUBLICADO") )
-            leArtigo(filestream, &V_pesq[i].V_artigos[k++]);
-
-        }
-        free(strng);
-        i++;
-        j = 0;
-        k = 0;
-
-        //Le dados do arquivo
-
-        fclose(filestream);
-
-      } else
-        fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
-
-    } //if ( entry->d_type == DT_REG )
-
-}
-
 
 ///////////////////////////////////
 /// Edit Distance
@@ -184,7 +99,6 @@ void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, 
     printf("\n");
 
   } //Percorre pesquisadores
-
 }
 
 
@@ -229,8 +143,6 @@ int main (int argc, char **argv){
     fprintf(stderr, "Erro na leitura dos periodicos\n");
     exit(3);
   }
-  for (int i=0; i<tam_per ;i++)
-    strtolow(V_per[i].nome);
 
   //Inicializa vetor de conferencias
   V_conf = leQualitativos(conferencias, &tam_conf);
@@ -239,8 +151,6 @@ int main (int argc, char **argv){
     destroiClasse(V_per, tam_per);
     exit(4);
   }
-  for (int i=0; i<tam_conf ;i++)
-    strtolow(V_conf[i].nome);
 
   //Inicializa vetor de pesquisadores
   tam_pesq = numberFiles(dirstream);
@@ -254,15 +164,10 @@ int main (int argc, char **argv){
 
   //Sumariza curriculos
   ledados(dirstream, argv[2], V_pesq, tam_pesq);
-  for (int i=0; i<tam_pesq ;i++){
-    for (int j=0; j<V_pesq[i].tam_eventos ;j++)
-      strtolow(V_pesq[i].V_eventos[j].titulo);
-    for (int j=0; j<V_pesq[i].tam_artigos ;j++)
-      strtolow(V_pesq[i].V_artigos[j].titulo);
-  }
 
   //Atribui os qualitativos de periodicos e conferencias aos pesquisadores
   qualifica(V_pesq, tam_pesq, V_per, tam_per, V_conf, tam_conf);
+
 
   //Calcula os dados coletados
   sumarizaDados(V_pesq, tam_pesq);
@@ -274,6 +179,5 @@ int main (int argc, char **argv){
 
   //Fechamento da stream
   closedir(dirstream);
-
   return 0;
 }

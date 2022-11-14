@@ -1,10 +1,16 @@
-#ifndef _LEITURA_
-#define _LEITURA_
+#ifndef _PESQUISADOR_
+#define _PESQUISADOR_
 
 #define STRSIZE 1024    //Tam do buffer de leitura
 #define FILENAME 100    //Tam do nome dos arquivos de period. e conf.
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
+
+#include "libstring.h"
+#include "liblistaautor.h"
 
 struct producao {
   char  *producao;      //Titulo da producao
@@ -15,13 +21,17 @@ struct producao {
 typedef struct producao producao_t;
 
 struct curriculo {
-  char *pesquisador;    //Nome do pesquisador
+  char *pesquisador;      //Nome do pesquisador
   producao_t *V_eventos;  //Vetor de conferencias
   producao_t *V_artigos;  //Vetor de artigos
   int tam_eventos;
   int tam_artigos;
+  lista_autor_t *coautores;
 };
 typedef struct curriculo curriculo_t;
+
+//Busca dados de todos os pesqisadores pelo diretorio especificado
+void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq);
 
 //Calcula a quantidade de artigos e eventos
 void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo);
@@ -30,10 +40,10 @@ void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo);
 void leNome(FILE *stream, curriculo_t *V_pesq);
 
 //Le dados de um evento
-void leEvento(FILE *stream, producao_t *prod);
+void leEvento(FILE *stream, producao_t *prod, lista_autor_t *autor);
 
 //Le dados de um artigo
-void leArtigo(FILE *stream, producao_t *prod);
+void leArtigo(FILE *stream, producao_t *prod, lista_autor_t *autor);
 
 //Desaloca vetor de curriculos
 void destroiCurriculos(curriculo_t *vetor, int tam);

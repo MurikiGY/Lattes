@@ -1,6 +1,13 @@
 #ifndef _LIBLISTAANO_
 #define _LIBLISTAANO_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "qualis.h"
+#include "libcolor.h"
+
 struct nodo_ano {
   int         ano;      //Ano do nodo
   int         *conf;    //Vetor de conferencias do ano
