@@ -1,7 +1,8 @@
 #include "sumariza.h"
 
-void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao){
+void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int option){
   lista_t **V_lista;   //Vetor de listas de estratos
+  //int graph_vector[10] = {};
 
   V_lista = malloc( sizeof(lista_t *)*10 );
 
@@ -11,7 +12,7 @@ void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao){
 
   //Percorre pesquisadores
   for (int i=0; i<tam_pesq ;i++){
-    if ( opcao == 1 ){
+    if ( option == 1 ){
       //Percorre eventos
       for (int j=0; j<V_pesq[i].tam_eventos ;j++)
         if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_eventos[j].qualis) ],
@@ -23,19 +24,19 @@ void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int opcao){
         if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_artigos[j].qualis) ],
               V_pesq[i].V_artigos[j].titulo) )
           printf("Erro em buscaListaIncrementa\n");
-    } //If opcao
+    } //If option
   } //For pesquisadores
 
   //Impressao de dados
   for (int i=0; i<4 ;i++){
-    printf("A%d:\n", i+1);
+    printf("Estrato A%d:\n", i+1);
     listaImprime(V_lista[i]);
     printf("\n");}
   for (int i=4; i<8 ;i++){
-    printf("B%d:\n", i-3);
+    printf("Estrato B%d:\n", i-3);
     listaImprime(V_lista[i]);
     printf("\n");}
-  printf("C:\n");
+  printf("Estrato C:\n");
   listaImprime(V_lista[8]);
   printf("\n");
 

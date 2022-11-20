@@ -1,4 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "liblistaano.h"
+#include "qualis.h"
 
 
 //Cria lista de anos

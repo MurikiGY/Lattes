@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "liblistaautor.h"
 
 lista_autor_t *criaListaAutor(){

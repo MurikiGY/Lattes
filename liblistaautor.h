@@ -1,11 +1,6 @@
 #ifndef _LIBLISTAAUTOR_
 #define _LIBLISTAAUTOR_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
 struct nodo_autor {
   char *nome;
   struct nodo_autor *prox;

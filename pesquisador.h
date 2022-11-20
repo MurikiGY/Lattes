@@ -2,7 +2,6 @@
 #define _PESQUISADOR_
 
 #define STRSIZE 1024    //Tam do buffer de leitura
-#define FILENAME 100    //Tam do nome dos arquivos de period. e conf.
 
 #include <stdio.h>
 #include <stdlib.h>

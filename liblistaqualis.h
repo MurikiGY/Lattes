@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct nodo;
+
 struct nodo {
   char    *titulo;    //String da producao
   int     cntr;       //Quantidade encontrada
