@@ -99,6 +99,43 @@ void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, 
 }
 
 
+void plotData(curriculo_t *V_pesq, int tam_pesq){
+
+  char *labels[] = {
+    "Periodicos",
+    "Conferencias"
+  };
+
+  char *plotCommands[] = {
+    "set title \"COMPARAÇÃO PERIÓDICOS/CONFERÊNCIAS\"",
+    "set boxwidth 0.7 absolute",
+    "set style fill solid 1.0",
+    "unset key",
+    "set ylabel \"Quantidade\"",
+    "set xtics (\"Periódicos\" 1, \"Conferências\" 2)",
+    "plot [0:3] [0:] 'data.temp' with boxes fc 'blue'"
+  };
+
+  int x_axis[2] = {1, 2};
+  int y_axis[2] = {0, 0};
+  FILE *temp = fopen("data.tmp", "w");
+
+  for (int i=0; i<tam_pesq ;i++){
+    y_axis[0] += V_pesq[i].tam_eventos;
+    y_axis[1] += V_pesq[i].tam_artigos;
+  }
+
+  FILE * gnuplot = popen("gnuplot -persistent", "w");
+  for (int i=0; i<2 ;i++)
+    fprintf(temp, "%-4d %-4d\n", x_axis[i], y_axis[i]);
+
+  for (int i=0; i<7 ;i++)
+    fprintf(gnuplot, "%s \n", plotCommands[i]);
+
+}
+
+
+
 int main (int argc, char **argv){
   DIR         *dirstream1;              //Variavel de stream do diretorio1
   DIR         *dirstream2;              //Variavel de stream do diretorio2
@@ -219,6 +256,8 @@ int main (int argc, char **argv){
     destroiCurriculos(V_pesq2, tam_pesq2);
   destroiClasse(V_per, tam_per);
   destroiClasse(V_conf, tam_conf);
+
+  plotData(V_pesq1, tam_pesq1);
 
   //Fechamento da stream
   closedir(dirstream1);
