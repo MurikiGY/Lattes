@@ -123,7 +123,6 @@ void calculaAno(curriculo_t *V_pesq, int tam_pesq){
 
   imprimeListaAno(anos);
   anos = destroiListaAno(anos);
-
 }
 
 
@@ -162,22 +161,22 @@ void calculaEstratoCNC(curriculo_t *V_pesq, int tam_pesq, int option){
   }
 
   if ( option == 0){
-    printf("+----Imprimindo conferencias classificadas em C-----+\n");
+    printf("+---- Conferencias Classificadas em C-----+\n");
     listaImprime(conf_lista);
     printf("Numero de conferencias em C: %d\n", conf_lista->tam);
     printf("\n");
-    printf("+-----Imprimindo periodicos classificados em C------+\n");
+    printf("+----- Periodicos Classificados em C------+\n");
     listaImprime(per_lista);
     printf("Numero de periodicos em C: %d\n", per_lista->tam);
     printf("\n");
   } else {
-    printf("+-----Imprimindo conferencias não encontrados-------+\n");
+    printf("+----- Conferencias não encontradas-------+\n");
     listaImprime(conf_lista);
-    printf("Numero de conferencias nao encontradas: %d\n", conf_lista->tam);
+    printf("Numero de conferencias não encontradas: %d\n", conf_lista->tam);
     printf("\n");
-    printf("+-------Imprimindo periodicos não encontrados-------+\n");
+    printf("+------- Periodicos não encontrados-------+\n");
     listaImprime(per_lista);
-    printf("Numero de periodicos nao encontrados: %d\n", per_lista->tam);
+    printf("Numero de periodicos não encontrados: %d\n", per_lista->tam);
     printf("\n");
   }
 
@@ -186,46 +185,96 @@ void calculaEstratoCNC(curriculo_t *V_pesq, int tam_pesq, int option){
 }
 
 void calculaCoautorias(curriculo_t *V_pesq, int tam_pesq){
-
   for (int i=0; i<tam_pesq ;i++){
-    printf("Imprimindo coautores de %s\n", V_pesq[i].pesquisador);
+    printf("Coautores de %s:\n", V_pesq[i].pesquisador);
     imprimeListaAutor(V_pesq[i].coautores);
     printf("\n");
   }
 }
 
 
-void sumarizaDados (curriculo_t *V_pesq, int tam_pesq){
+void sumarizaDados (curriculo_t *V_pesq1, int tam_pesq1, curriculo_t *V_pesq2, int tam_pesq2, int dir_count){
 
   printf("\n");
-  printf("+--------------------------------------+\n");
-  printf("|    Imprimindo Periodicos Globais     |\n");
-  printf("+--------------------------------------+\n");
-  calculaGlobal(V_pesq, tam_pesq, 0);
-  printf("+--------------------------------------+\n");
-  printf("|   Imprimindo Conferencias Globais    |\n");
-  printf("+--------------------------------------+\n");
-  calculaGlobal(V_pesq, tam_pesq, 1);
-  printf("+--------------------------------------+\n");
-  printf("|            Pesquisadores             |\n");
-  printf("+--------------------------------------+\n");
-  calculaPesquisador(V_pesq, tam_pesq);
-  printf("+--------------------------------------+\n");
-  printf("|                Anual                 |\n");
-  printf("+--------------------------------------+\n");
-  calculaAno(V_pesq, tam_pesq);
-  printf("+--------------------------------------+\n");
-  printf("|      Periodicos e Conferencias C     |\n");
-  printf("+--------------------------------------+\n");
-  calculaEstratoCNC(V_pesq, tam_pesq, 0);
-  printf("+--------------------------------------+\n");
-  printf("|     Periodicos e Conferencias NC     |\n");
-  printf("+--------------------------------------+\n");
-  calculaEstratoCNC(V_pesq, tam_pesq, 1);
-  printf("+--------------------------------------+\n");
-  printf("|         Lista de coautorias          |\n");
-  printf("+--------------------------------------+\n");
-  calculaCoautorias(V_pesq, tam_pesq);
-
+  if ( dir_count < 2 ){
+    printf("+--------------------------------------+\n");
+    printf("|    Imprimindo Periodicos Globais     |\n");
+    printf("+--------------------------------------+\n");
+    calculaGlobal(V_pesq1, tam_pesq1, 0);
+    printf("+--------------------------------------+\n");
+    printf("|   Imprimindo Conferencias Globais    |\n");
+    printf("+--------------------------------------+\n");
+    calculaGlobal(V_pesq1, tam_pesq1, 1);
+    printf("+--------------------------------------+\n");
+    printf("|            Pesquisadores             |\n");
+    printf("+--------------------------------------+\n");
+    calculaPesquisador(V_pesq1, tam_pesq1);
+    printf("+--------------------------------------+\n");
+    printf("|                Anual                 |\n");
+    printf("+--------------------------------------+\n");
+    calculaAno(V_pesq1, tam_pesq1);
+    printf("+--------------------------------------+\n");
+    printf("|      Periodicos e Conferencias C     |\n");
+    printf("+--------------------------------------+\n");
+    calculaEstratoCNC(V_pesq1, tam_pesq1, 0);
+    printf("+--------------------------------------+\n");
+    printf("|     Periodicos e Conferencias NC     |\n");
+    printf("+--------------------------------------+\n");
+    calculaEstratoCNC(V_pesq1, tam_pesq1, 1);
+    printf("+--------------------------------------+\n");
+    printf("|         Lista de coautorias          |\n");
+    printf("+--------------------------------------+\n");
+    calculaCoautorias(V_pesq1, tam_pesq1);
+  } else {
+    printf("+--------------------------------------+\n");
+    printf("|    Imprimindo Periodicos Globais     |\n");
+    printf("+--------------------------------------+\n");
+    printf("\n<== Imprimindo dados do primeiro diretório ==>\n");
+    calculaGlobal(V_pesq1, tam_pesq1, 0);
+    printf("\n<=== Imprimindo dados do segundo diretório ===>\n");
+    calculaGlobal(V_pesq2, tam_pesq2, 0);
+    printf("+--------------------------------------+\n");
+    printf("|   Imprimindo Conferencias Globais    |\n");
+    printf("+--------------------------------------+\n");
+    printf("\n<== Imprimindo dados do primeiro diretório ==>\n");
+    calculaGlobal(V_pesq1, tam_pesq1, 1);
+    printf("\n<=== Imprimindo dados do segundo diretório ===>\n");
+    calculaGlobal(V_pesq2, tam_pesq2, 1);
+    printf("+--------------------------------------+\n");
+    printf("|            Pesquisadores             |\n");
+    printf("+--------------------------------------+\n");
+    printf("\n<== Imprimindo dados do primeiro diretório ==>\n");
+    calculaPesquisador(V_pesq1, tam_pesq1);
+    printf("\n<=== Imprimindo dados do segundo diretório ===>\n");
+    calculaPesquisador(V_pesq2, tam_pesq2);
+    printf("+--------------------------------------+\n");
+    printf("|                Anual                 |\n");
+    printf("+--------------------------------------+\n");
+    printf("\n<== Imprimindo dados do primeiro diretório ==>\n");
+    calculaAno(V_pesq1, tam_pesq1);
+    printf("\n<=== Imprimindo dados do segundo diretório ===>\n");
+    calculaAno(V_pesq2, tam_pesq2);
+    printf("+--------------------------------------+\n");
+    printf("|      Periodicos e Conferencias C     |\n");
+    printf("+--------------------------------------+\n");
+    printf("\n<== Imprimindo dados do primeiro diretório ==>\n");
+    calculaEstratoCNC(V_pesq1, tam_pesq1, 0);
+    printf("\n<=== Imprimindo dados do segundo diretório ===>\n");
+    calculaEstratoCNC(V_pesq2, tam_pesq2, 0);
+    printf("+--------------------------------------+\n");
+    printf("|     Periodicos e Conferencias NC     |\n");
+    printf("+--------------------------------------+\n");
+    printf("\n<== Imprimindo dados do primeiro diretório ==>\n");
+    calculaEstratoCNC(V_pesq1, tam_pesq1, 1);
+    printf("\n<=== Imprimindo dados do segundo diretório ===>\n");
+    calculaEstratoCNC(V_pesq2, tam_pesq2, 1);
+    printf("+--------------------------------------+\n");
+    printf("|         Lista de coautorias          |\n");
+    printf("+--------------------------------------+\n");
+    printf("\n<== Imprimindo dados do primeiro diretório ==>\n");
+    calculaCoautorias(V_pesq1, tam_pesq1);
+    printf("\n<=== Imprimindo dados do segundo diretório ===>\n");
+    calculaCoautorias(V_pesq2, tam_pesq2);
+  }
 }
 

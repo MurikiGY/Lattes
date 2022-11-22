@@ -23,6 +23,6 @@ void calculaAno(curriculo_t *V_pesq, int tam_pesq);
 
 void calculaEstratoCNC(curriculo_t *V_pesq, int tam_pesq, int option);
 
-void sumarizaDados (curriculo_t *V_pesq, int tam_pesq);
+void sumarizaDados (curriculo_t *V_pesq1, int tam_pesq1, curriculo_t *V_pesq2, int tam_pesq2, int dir_count);
 
 #endif

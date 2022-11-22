@@ -68,7 +68,6 @@ int distance (char* word1, char* word2){
 
 void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, classe_t *V_conf, int tam_conf){
 
-#pragma omp parallel for
   //Percorre pesquisadores
   for(int i=0; i<tam_pesq ;i++){
     printf("Qualificando %s\n", V_pesq[i].pesquisador);
@@ -231,36 +230,33 @@ int main (int argc, char **argv){
     }
   }
 
-  //Sumariza curriculos
+  //Busca dados dos curriculos
   ledados(dirstream1, diretorio1, V_pesq1, tam_pesq1);
-  if ( dir_count == 2 )
-    //Sumariza curriculos
-    ledados(dirstream2, diretorio2, V_pesq2, tam_pesq2);
-
-  //Atribui os qualitativos de periodicos e conferencias aos pesquisadores
+  //Atribui qualitativos de periodicos e conferencias dos pesquisadores
   qualifica(V_pesq1, tam_pesq1, V_per, tam_per, V_conf, tam_conf);
 
-  if ( dir_count == 2 )
-  //Atribui os qualitativos de periodicos e conferencias aos pesquisadores
-  qualifica(V_pesq2, tam_pesq2, V_per, tam_per, V_conf, tam_conf);
+  if ( dir_count == 2 ){
+    ledados(dirstream2, diretorio2, V_pesq2, tam_pesq2);
+    qualifica(V_pesq2, tam_pesq2, V_per, tam_per, V_conf, tam_conf);
+  }
 
   //Calcula os dados coletados
-  sumarizaDados(V_pesq1, tam_pesq1);
-  if ( dir_count == 2 )
-    //Calcula os dados coletados
-    sumarizaDados(V_pesq2, tam_pesq2);
+  sumarizaDados(V_pesq1, tam_pesq1, V_pesq2, tam_pesq2, dir_count);
 
-  //Desaloca vetores
+  //Imprime dados e libera
+//  plotData(V_pesq1, tam_pesq1);
   destroiCurriculos(V_pesq1, tam_pesq1);
-  if ( dir_count == 2 )
+  closedir(dirstream1);
+
+  if ( dir_count == 2 ){
+//    plotData(V_pesq2, tam_pesq2);
     destroiCurriculos(V_pesq2, tam_pesq2);
+    closedir(dirstream2);
+  }
+
+  //Desaloca periodicos e conferencias
   destroiClasse(V_per, tam_per);
   destroiClasse(V_conf, tam_conf);
 
-  plotData(V_pesq1, tam_pesq1);
-
-  //Fechamento da stream
-  closedir(dirstream1);
-  closedir(dirstream2);
   return 0;
 }

@@ -70,7 +70,7 @@ void imprimeListaAutor(lista_autor_t *l){
   nodo_autor_t *aux = l->head;
 
   while ( aux ){
-    printf("Autor: %s\n", aux->nome);
+    printf("- %s\n", aux->nome);
     aux = aux->prox;
   }
 }
