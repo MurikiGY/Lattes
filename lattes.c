@@ -252,12 +252,9 @@ int main (int argc, char **argv){
   sumarizaDados(V_pesq1, tam_pesq1, V_pesq2, tam_pesq2, dir_count);  //Calcula os dados coletados
 
   //Imprime dados e libera
-//  plotData(V_pesq1, tam_pesq1);
   destroiCurriculos(V_pesq1, tam_pesq1);
   closedir(dirstream1);
-
   if ( dir_count == 2 ){
-//    plotData(V_pesq2, tam_pesq2);
     destroiCurriculos(V_pesq2, tam_pesq2);
     closedir(dirstream2);}
 

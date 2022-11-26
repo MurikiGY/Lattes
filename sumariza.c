@@ -189,6 +189,7 @@ void calculaCoautorias (curriculo_t *V_pesq, int tam_pesq){
   }
 }
 
+
 void plotGrafico (curriculo_t *V_pesq, int tam){
   int conf = 0;
   int per = 0;
@@ -206,6 +207,42 @@ void plotGrafico (curriculo_t *V_pesq, int tam){
   for (int i=0; i<per/3 ;i++)
     printf("#");
   printf(" %d\n", per);
+}
+
+
+void plotData(curriculo_t *V_pesq, int tam_pesq){
+
+  char *labels[] = {
+    "Periodicos",
+    "Conferencias"
+  };
+
+  char *plotCommands[] = {
+    "set title \"COMPARAÇÃO PERIÓDICOS/CONFERÊNCIAS\"",
+    "set boxwidth 0.7 absolute",
+    "set style fill solid 1.0",
+    "unset key",
+    "set ylabel \"Quantidade\"",
+    "set xtics (\"Periódicos\" 1, \"Conferências\" 2)",
+    "plot [0:3] [0:] 'data.temp' with boxes fc 'blue'"
+  };
+
+  int x_axis[2] = {1, 2};
+  int y_axis[2] = {0, 0};
+  FILE *temp = fopen("data.tmp", "w");
+
+  for (int i=0; i<tam_pesq ;i++){
+    y_axis[0] += V_pesq[i].tam_eventos;
+    y_axis[1] += V_pesq[i].tam_artigos;
+  }
+
+  FILE * gnuplot = popen("gnuplot -persistent", "w");
+  for (int i=0; i<2 ;i++)
+    fprintf(temp, "%-4d %-4d\n", x_axis[i], y_axis[i]);
+
+  for (int i=0; i<7 ;i++)
+    fprintf(gnuplot, "%s \n", plotCommands[i]);
+
 }
 
 
@@ -242,6 +279,7 @@ void sumarizaDados (curriculo_t *V_pesq1, int tam_pesq1, curriculo_t *V_pesq2, i
     printf("+--------------------------------------+\n");
     calculaCoautorias(V_pesq1, tam_pesq1);
     plotGrafico(V_pesq1, tam_pesq1);
+    plotData(V_pesq1, tam_pesq1);
   } else {
     printf("+--------------------------------------+\n");
     printf("|    Imprimindo Periodicos Globais     |\n");
