@@ -1,4 +1,4 @@
-CC = gcc -g -fopenmp
+CC = gcc -g 
 CCFLAGS = -Wall -O3 -std=c99     #Flags de compilação
 LDFLAGS =                       #Blibliotecas a ligar
 SOURCES = $(wildcard *.c)       #Arquivos .c

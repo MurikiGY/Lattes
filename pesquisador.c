@@ -1,12 +1,12 @@
 #include "pesquisador.h"
 
 
-void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
+void leDados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
   struct dirent   *entry;         //Estrutura do dirent dara o dirstream
   FILE            *filestream;    //Stream de acesso a arquivo
-  int i=0;  //Contador do vetor do pesquisador
-  int j=0;  //Contador do vetor de eventos para cada pesquisador
-  int k=0;  //Contador do vetor de artigos para cada pesquisador
+  int             i=0;            //Contador do vetor do pesquisador
+  int             j=0;            //Contador do vetor de eventos para cada pesquisador
+  int             k=0;            //Contador do vetor de artigos para cada pesquisador
 
   //Iteração sobre o diretorio
   while ( entry = readdir(dirstream) )

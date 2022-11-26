@@ -10,9 +10,65 @@
 #include "libarquivos.h"
 #include "libstring.h"
 
-#define FILENAME 100    //Tam do nome dos arquivos de period. e conf.
-#define DIST 3    //Parametro da distancia de edição de strings
+#define FILENAME  100   //Tam do nome dos arquivos de period. e conf.
+#define DIST      4     //Parametro da distancia de edição de strings
 
+
+int iniciaComparativos(char *per, char *conf, classe_t **V_per, int *tam_per, classe_t **V_conf, int *tam_conf){
+  
+  //Inicializa vetor de periodicos
+  *V_per = leQualitativos(per, tam_per);
+  if (!V_per){
+    fprintf(stderr, "Erro na leitura dos periodicos\n");
+    return 1;
+  }
+
+  //Inicializa vetor de conferencias
+  *V_conf = leQualitativos(conf, tam_conf);
+  if (!V_conf){
+    fprintf(stderr, "Erro na leitura das conferencias\n");
+    destroiClasse(*V_per, *tam_per);
+    return 2;
+  }
+
+  return 0;
+}
+
+int iniciaDiretorios(char *dir1, char *dir2, DIR **dStream1, DIR **dStream2,
+curriculo_t **V_pesq1, int *tam1, curriculo_t **V_pesq2, int *tam2, int dir_count){
+
+  //Abertura da stream do primeiro diretorio
+  *dStream1 = opendir(dir1);
+  if ( !dir1 ){
+    perror("Não foi possivel acessar o diretório\n");
+    return 1;
+  }
+  //Inicializa vetor de pesquisadores
+  *tam1 = numberFiles(*dStream1);
+  *V_pesq1 = malloc( sizeof(curriculo_t) * (*tam1) );
+  if ( !V_pesq1 ){
+    fprintf(stderr, "Falha de alocacao no vetor de pesquisadores\n");
+    return 2;
+  }
+
+  //Abertura da stream do segundo diretorio
+  if ( dir_count == 2 ){
+    //Abertura da stream do segundo diretorio
+    *dStream2 = opendir(dir2);
+    if (!dir2){
+      perror("Não foi possivel acessar o diretório\n");
+      return 3;}
+    //Inicializa vetor de pesquisadores
+    *tam2 = numberFiles(*dStream2);
+    *V_pesq2 = malloc( sizeof(curriculo_t) * (*tam2) );
+    if ( !V_pesq2 ){
+      fprintf(stderr, "Falha de alocacao no vetor de pesquisadores\n");
+      return 4;
+    }
+  }
+
+  return 0;
+}
 
 ///////////////////////////////////
 /// Edit Distance
@@ -136,33 +192,29 @@ void plotData(curriculo_t *V_pesq, int tam_pesq){
 
 
 int main (int argc, char **argv){
-  DIR         *dirstream1;              //Variavel de stream do diretorio1
-  DIR         *dirstream2;              //Variavel de stream do diretorio2
-  char        diretorio1[FILENAME];     //Nome do primeiro diretorio
-  char        diretorio2[FILENAME];     //Nome do segundo diretorio
-  int         dir_count = 0;            //Contador do numero de diretorios
-  char        periodicos[FILENAME];     //Nome do arquivo de periodicos
-  char        conferencias[FILENAME];   //Nome do arquivo de conferencias
-  classe_t    *V_per;                   //Vetor de classes periodicos
-  int         tam_per;                  //Tamanho do vetor de periodicos
-  classe_t    *V_conf;                  //Vetor de classes conferencias
-  int         tam_conf;                 //Tamanho do vetor de conferencias
-  curriculo_t *V_pesq1;                  //Vetor de pesquisadores
-  int         tam_pesq1;                 //Tamanho do vetor de pesquisadores
-  curriculo_t *V_pesq2;                  //Vetor de pesquisadores
-  int         tam_pesq2;                 //Tamanho do vetor de pesquisadores
+  DIR         *dirstream1, *dirstream2;     //Variavel de stream do diretorio1
+  char        dir1[FILENAME];         //Nome do primeiro diretorio
+  char        dir2[FILENAME];         //Nome do segundo diretorio
+  int         dir_count = 0;                //Contador do numero de diretorios
+  char        periodicos[FILENAME];         //Nome do arquivo de periodicos
+  char        conferencias[FILENAME];       //Nome do arquivo de conferencias
+  classe_t    *V_per, *V_conf;              //Vetor de classes de periodicos e conferencias
+  int         tam_per, tam_conf;            //Tamanho do vetor de periodicos e conferencias
+  curriculo_t *V_pesq1, *V_pesq2;           //Vetores de pesquisadores
+  int         tam_pesq1, tam_pesq2;         //Tamanho dos vetores de pesquisadores
+  int         log;
 
   int option;
-  //Teste de parametros
+  //Teste de par
   while ( (option = getopt(argc, argv, "d:p:c:")) != -1)
     switch (option){
       case 'd':
         optind--;
         for (;optind < argc && *argv[optind] != '-'; optind++){
           if ( !dir_count )
-            strncpy(diretorio1, argv[optind], FILENAME);
+            strncpy(dir1, argv[optind], FILENAME);
           else
-            strncpy(diretorio2, argv[optind], FILENAME);
+            strncpy(dir2, argv[optind], FILENAME);
           dir_count++;
         }
         break;
@@ -177,71 +229,27 @@ int main (int argc, char **argv){
         exit(1);
     }
 
-  //Abertura da stream do primeiro diretorio
-  dirstream1 = opendir(diretorio1);
-  if (!dirstream1){
-    perror("Não foi possivel acessar o diretório\n");
-    exit(2);
-  }
+  //Inicia periodicos e conferencias
+  log = iniciaComparativos(periodicos, conferencias, &V_per, &tam_per, &V_conf, &tam_conf);
+  if ( log )
+    return 2;
 
-  if ( dir_count == 2 ){
-    //Abertura da stream do segundo diretorio
-    dirstream2 = opendir(diretorio2);
-    if (!dirstream2){
-      perror("Não foi possivel acessar o diretório\n");
-      exit(2);
-    }
-  }
-
-  //Inicializa vetor de periodicos
-  V_per = leQualitativos(periodicos, &tam_per);
-  if (!V_per){
-    fprintf(stderr, "Erro na leitura dos periodicos\n");
-    exit(3);
-  }
-
-  //Inicializa vetor de conferencias
-  V_conf = leQualitativos(conferencias, &tam_conf);
-  if (!V_conf){
-    fprintf(stderr, "Erro na leitura das conferencias\n");
-    destroiClasse(V_per, tam_per);
-    exit(4);
-  }
-
-  //Inicializa vetor de pesquisadores
-  tam_pesq1 = numberFiles(dirstream1);
-  V_pesq1 = malloc( sizeof(curriculo_t) * tam_pesq1 );
-  if ( !V_pesq1 ){
-    fprintf(stderr, "Falha de alocacao no vetor de pesquisadores\n");
+  //Inicia acesso aos diretorios
+  log = iniciaDiretorios(dir1, dir2, &dirstream1, &dirstream2, &V_pesq1, &tam_pesq1, &V_pesq2, &tam_pesq2, dir_count);
+  if ( log ){
     destroiClasse(V_per, tam_per);
     destroiClasse(V_conf, tam_conf);
-    exit(5);
+    return 3;
   }
-
+  
+  leDados(dirstream1, dir1, V_pesq1, tam_pesq1);                    //Busca dados dos curriculos
+  qualifica(V_pesq1, tam_pesq1, V_per, tam_per, V_conf, tam_conf);  //Atribui qualitativos
   if ( dir_count == 2 ){
-    //Inicializa vetor de pesquisadores
-    tam_pesq2 = numberFiles(dirstream2);
-    V_pesq2 = malloc( sizeof(curriculo_t) * tam_pesq2 );
-    if ( !V_pesq2 ){
-      fprintf(stderr, "Falha de alocacao no vetor de pesquisadores\n");
-      destroiClasse(V_per, tam_per);
-      destroiClasse(V_conf, tam_conf);
-      exit(5);
-    }
-  }
-
-  //Busca dados dos curriculos
-  ledados(dirstream1, diretorio1, V_pesq1, tam_pesq1);
-  //Atribui qualitativos de periodicos e conferencias dos pesquisadores
-  qualifica(V_pesq1, tam_pesq1, V_per, tam_per, V_conf, tam_conf);
-
-  if ( dir_count == 2 ){
-    ledados(dirstream2, diretorio2, V_pesq2, tam_pesq2);
+    leDados(dirstream2, dir2, V_pesq2, tam_pesq2);
     qualifica(V_pesq2, tam_pesq2, V_per, tam_per, V_conf, tam_conf);
   }
 
-  //Calcula os dados coletados
-  sumarizaDados(V_pesq1, tam_pesq1, V_pesq2, tam_pesq2, dir_count);
+  sumarizaDados(V_pesq1, tam_pesq1, V_pesq2, tam_pesq2, dir_count);  //Calcula os dados coletados
 
   //Imprime dados e libera
 //  plotData(V_pesq1, tam_pesq1);
@@ -251,12 +259,10 @@ int main (int argc, char **argv){
   if ( dir_count == 2 ){
 //    plotData(V_pesq2, tam_pesq2);
     destroiCurriculos(V_pesq2, tam_pesq2);
-    closedir(dirstream2);
-  }
+    closedir(dirstream2);}
 
   //Desaloca periodicos e conferencias
   destroiClasse(V_per, tam_per);
   destroiClasse(V_conf, tam_conf);
-
   return 0;
 }

@@ -1,10 +1,9 @@
 #include "sumariza.h"
 
 void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int option){
-  lista_t **V_lista;   //Vetor de listas de estratos
-  //int graph_vector[10] = {};
+  lista_t   **V_lista;   //Vetor de listas de estratos
 
-  V_lista = malloc( sizeof(lista_t *)*10 );
+  V_lista = malloc( sizeof(lista_t *) * 10 );
 
   //Inicializa listas
   for (int i=0; i<10 ;i++)
@@ -15,14 +14,12 @@ void calculaGlobal(curriculo_t *V_pesq, int tam_pesq, int option){
     if ( option == 1 ){
       //Percorre eventos
       for (int j=0; j<V_pesq[i].tam_eventos ;j++)
-        if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_eventos[j].qualis) ],
-              V_pesq[i].V_eventos[j].titulo) )
+        if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_eventos[j].qualis) ], V_pesq[i].V_eventos[j].titulo) )
           printf("Erro em buscaListaIncrementa\n");
     } else {
       //Percorre artigos
       for (int j=0; j<V_pesq[i].tam_artigos ;j++)
-        if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_artigos[j].qualis) ],
-              V_pesq[i].V_artigos[j].titulo) )
+        if ( buscaListaIncrementa(V_lista[ estrato(V_pesq[i].V_artigos[j].qualis) ], V_pesq[i].V_artigos[j].titulo) )
           printf("Erro em buscaListaIncrementa\n");
     } //If option
   } //For pesquisadores
@@ -60,15 +57,14 @@ void calculaPesquisador(curriculo_t *V_pesq, int tam_pesq){
     //percorre conferencias
     for (int j=0; j<V_pesq[i].tam_eventos ;j++){
       (conf[ estrato(V_pesq[i].V_eventos[j].qualis) ])++;
-      if (V_pesq[i].V_eventos[j].qualis != NULL)
         count1++;
+      //if (V_pesq[i].V_eventos[j].qualis != NULL)
     }
-
     //percorre periodicos
     for (int j=0; j<V_pesq[i].tam_artigos ;j++){
       (per[ estrato(V_pesq[i].V_artigos[j].qualis) ])++;
-      if (V_pesq[i].V_artigos[j].qualis != NULL)
         count2++;
+      //if (V_pesq[i].V_artigos[j].qualis != NULL)
     }
     
     //Impressão
@@ -81,6 +77,7 @@ void calculaPesquisador(curriculo_t *V_pesq, int tam_pesq){
     for (int j=4; j<8 ;j++)
       printf("| B%d: %-3d      | B%d: %-3d    |\n", j-3, conf[j], j-3, per[j]);
     printf("| C : %-3d      | C : %-3d    |\n", conf[8], per[8]);
+    printf("| NC: %-3d      | NC: %-3d    |\n", conf[9], per[9]);
     printf("+---------------------------+\n");
 
     printf("Total de conferências: %d\n", count1);
@@ -184,12 +181,31 @@ void calculaEstratoCNC(curriculo_t *V_pesq, int tam_pesq, int option){
   listaDestroi(per_lista);
 }
 
-void calculaCoautorias(curriculo_t *V_pesq, int tam_pesq){
+void calculaCoautorias (curriculo_t *V_pesq, int tam_pesq){
   for (int i=0; i<tam_pesq ;i++){
     printf("Coautores de %s:\n", V_pesq[i].pesquisador);
     imprimeListaAutor(V_pesq[i].coautores);
     printf("\n");
   }
+}
+
+void plotGrafico (curriculo_t *V_pesq, int tam){
+  int conf = 0;
+  int per = 0;
+
+  for (int i=0; i<tam ;i++){
+    conf = conf + V_pesq[i].tam_eventos;
+    per = per + V_pesq[i].tam_artigos;
+  }
+
+  printf("%sConferencias  |", BLU);
+  for (int i=0; i<conf/3 ;i++)
+    printf("#");
+  printf(" %d\n", conf);
+  printf("%sPeriodicos    |", RED);
+  for (int i=0; i<per/3 ;i++)
+    printf("#");
+  printf(" %d\n", per);
 }
 
 
@@ -225,6 +241,7 @@ void sumarizaDados (curriculo_t *V_pesq1, int tam_pesq1, curriculo_t *V_pesq2, i
     printf("|         Lista de coautorias          |\n");
     printf("+--------------------------------------+\n");
     calculaCoautorias(V_pesq1, tam_pesq1);
+    plotGrafico(V_pesq1, tam_pesq1);
   } else {
     printf("+--------------------------------------+\n");
     printf("|    Imprimindo Periodicos Globais     |\n");

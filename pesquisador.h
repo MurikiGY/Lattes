@@ -30,7 +30,7 @@ struct curriculo {
 typedef struct curriculo curriculo_t;
 
 //Busca dados de todos os pesqisadores pelo diretorio especificado
-void ledados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq);
+void leDados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq);
 
 //Calcula a quantidade de artigos e eventos
 void calcArtigoEvento(FILE *stream, int *num_evento, int *num_artigo);
