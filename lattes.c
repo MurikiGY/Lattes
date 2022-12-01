@@ -154,47 +154,10 @@ void qualifica(curriculo_t *V_pesq, int tam_pesq, classe_t *V_per, int tam_per, 
 }
 
 
-void plotData(curriculo_t *V_pesq, int tam_pesq){
-
-  char *labels[] = {
-    "Periodicos",
-    "Conferencias"
-  };
-
-  char *plotCommands[] = {
-    "set title \"COMPARAÇÃO PERIÓDICOS/CONFERÊNCIAS\"",
-    "set boxwidth 0.7 absolute",
-    "set style fill solid 1.0",
-    "unset key",
-    "set ylabel \"Quantidade\"",
-    "set xtics (\"Periódicos\" 1, \"Conferências\" 2)",
-    "plot [0:3] [0:] 'data.temp' with boxes fc 'blue'"
-  };
-
-  int x_axis[2] = {1, 2};
-  int y_axis[2] = {0, 0};
-  FILE *temp = fopen("data.tmp", "w");
-
-  for (int i=0; i<tam_pesq ;i++){
-    y_axis[0] += V_pesq[i].tam_eventos;
-    y_axis[1] += V_pesq[i].tam_artigos;
-  }
-
-  FILE * gnuplot = popen("gnuplot -persistent", "w");
-  for (int i=0; i<2 ;i++)
-    fprintf(temp, "%-4d %-4d\n", x_axis[i], y_axis[i]);
-
-  for (int i=0; i<7 ;i++)
-    fprintf(gnuplot, "%s \n", plotCommands[i]);
-
-}
-
-
-
 int main (int argc, char **argv){
   DIR         *dirstream1, *dirstream2;     //Variavel de stream do diretorio1
-  char        dir1[FILENAME];         //Nome do primeiro diretorio
-  char        dir2[FILENAME];         //Nome do segundo diretorio
+  char        dir1[FILENAME];               //Nome do primeiro diretorio
+  char        dir2[FILENAME];               //Nome do segundo diretorio
   int         dir_count = 0;                //Contador do numero de diretorios
   char        periodicos[FILENAME];         //Nome do arquivo de periodicos
   char        conferencias[FILENAME];       //Nome do arquivo de conferencias
@@ -251,7 +214,7 @@ int main (int argc, char **argv){
 
   sumarizaDados(V_pesq1, tam_pesq1, V_pesq2, tam_pesq2, dir_count);  //Calcula os dados coletados
 
-  //Imprime dados e libera
+  //Libera estruturas
   destroiCurriculos(V_pesq1, tam_pesq1);
   closedir(dirstream1);
   if ( dir_count == 2 ){

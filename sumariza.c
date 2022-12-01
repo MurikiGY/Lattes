@@ -210,6 +210,7 @@ void plotGrafico (curriculo_t *V_pesq, int tam){
 }
 
 
+https://stackoverflow.com/questions/327576/how-do-you-plot-bar-charts-in-gnuplot
 void plotData(curriculo_t *V_pesq, int tam_pesq){
 
   char *labels[] = {
@@ -220,11 +221,12 @@ void plotData(curriculo_t *V_pesq, int tam_pesq){
   char *plotCommands[] = {
     "set title \"COMPARAÇÃO PERIÓDICOS/CONFERÊNCIAS\"",
     "set boxwidth 0.7 absolute",
-    "set style fill solid 1.0",
+    "set style fill solid",
+
     "unset key",
     "set ylabel \"Quantidade\"",
     "set xtics (\"Periódicos\" 1, \"Conferências\" 2)",
-    "plot [0:3] [0:] 'data.temp' with boxes fc 'blue'"
+    "plot [0:3] [0:] 'data.tmp' with boxes fc 'blue'"
   };
 
   int x_axis[2] = {1, 2};
@@ -242,7 +244,6 @@ void plotData(curriculo_t *V_pesq, int tam_pesq){
 
   for (int i=0; i<7 ;i++)
     fprintf(gnuplot, "%s \n", plotCommands[i]);
-
 }
 
 
