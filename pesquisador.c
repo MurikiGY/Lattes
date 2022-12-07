@@ -9,7 +9,8 @@ void leDados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
   int             k=0;            //Contador do vetor de artigos para cada pesquisador
 
   //Iteração sobre o diretorio
-  while ( entry = readdir(dirstream) )
+  entry = readdir(dirstream);
+  while ( entry ){
     if ( entry->d_type == DT_REG ){
 
       char path[strlen(dir) + strlen(entry->d_name) + 2];
@@ -56,6 +57,8 @@ void leDados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
       } else
         fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
     } //if ( entry->d_type == DT_REG )
+    entry = readdir(dirstream);
+  } //while ( entry )
 }
 
 

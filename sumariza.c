@@ -207,43 +207,52 @@ void plotGrafico (curriculo_t *V_pesq, int tam){
   for (int i=0; i<per/3 ;i++)
     printf("#");
   printf(" %d\n", per);
+  printf("%s", DFT);
 }
 
 
-https://stackoverflow.com/questions/327576/how-do-you-plot-bar-charts-in-gnuplot
-void plotData(curriculo_t *V_pesq, int tam_pesq){
-
-  char *labels[] = {
-    "Periodicos",
-    "Conferencias"
-  };
+//https://stackoverflow.com/questions/327576/how-do-you-plot-bar-charts-in-gnuplot
+void plotData(curriculo_t *V_pesq, int tam_pesq, int option){
+  int conf[10] = {};
+  int per[10] = {};
 
   char *plotCommands[] = {
-    "set title \"COMPARAÇÃO PERIÓDICOS/CONFERÊNCIAS\"",
-    "set boxwidth 0.7 absolute",
+    "set title \"Periodicos/Conferencias\"",
+    "red = \"#FF0000\"; blue = \"#0000FF\";",
     "set style fill solid",
-
-    "unset key",
-    "set ylabel \"Quantidade\"",
-    "set xtics (\"Periódicos\" 1, \"Conferências\" 2)",
-    "plot [0:3] [0:] 'data.tmp' with boxes fc 'blue'"
+    "set style data histogram",
+    "set boxwidth 0.4",
+    "set xtics rotate",
+    "set xrange [-1:9]",
+    "set grid ytics",
+    "plot \"data.dat\" using 2:xtic(1) title \"periodicos\" linecolor rgb red, \"data.dat\" using 3 title \"conferencias\" linecolor rgb blue"
   };
 
-  int x_axis[2] = {1, 2};
-  int y_axis[2] = {0, 0};
-  FILE *temp = fopen("data.tmp", "w");
-
+  //Percorre pesquisadores
   for (int i=0; i<tam_pesq ;i++){
-    y_axis[0] += V_pesq[i].tam_eventos;
-    y_axis[1] += V_pesq[i].tam_artigos;
+    //percorre conferencias
+    for (int j=0; j<V_pesq[i].tam_eventos ;j++)
+      (conf[ estrato(V_pesq[i].V_eventos[j].qualis) ])++;
+    //percorre periodicos
+    for (int j=0; j<V_pesq[i].tam_artigos ;j++)
+      (per[ estrato(V_pesq[i].V_artigos[j].qualis) ])++;
   }
 
-  FILE * gnuplot = popen("gnuplot -persistent", "w");
-  for (int i=0; i<2 ;i++)
-    fprintf(temp, "%-4d %-4d\n", x_axis[i], y_axis[i]);
+  FILE *temp = fopen("data.dat", "w");
+  FILE *gnuplot = popen("gnuplot -persistent", "w");
 
-  for (int i=0; i<7 ;i++)
+  //Escreve os dados
+  for (int i=0; i<4 ;i++)
+    fprintf(temp, "A%d %d %d\n", i+1, per[i], conf[i]);
+  for (int i=4; i<8 ;i++)
+    fprintf(temp, "B%d %d %d\n", i-3, per[i], conf[i]);
+
+  //Monta grafico
+  for (int i=0; i<9 ;i++)
     fprintf(gnuplot, "%s \n", plotCommands[i]);
+
+  fclose(temp);
+  pclose(gnuplot);
 }
 
 
@@ -279,8 +288,7 @@ void sumarizaDados (curriculo_t *V_pesq1, int tam_pesq1, curriculo_t *V_pesq2, i
     printf("|         Lista de coautorias          |\n");
     printf("+--------------------------------------+\n");
     calculaCoautorias(V_pesq1, tam_pesq1);
-    plotGrafico(V_pesq1, tam_pesq1);
-    plotData(V_pesq1, tam_pesq1);
+    plotData(V_pesq1, tam_pesq1, 1);
   } else {
     printf("+--------------------------------------+\n");
     printf("|    Imprimindo Periodicos Globais     |\n");
@@ -331,6 +339,8 @@ void sumarizaDados (curriculo_t *V_pesq1, int tam_pesq1, curriculo_t *V_pesq2, i
     calculaCoautorias(V_pesq1, tam_pesq1);
     printf("\n<=== Imprimindo dados do segundo diretório ===>\n");
     calculaCoautorias(V_pesq2, tam_pesq2);
+    plotData(V_pesq1, tam_pesq1, 1);
+    plotData(V_pesq2, tam_pesq2, 2);
   }
 }
 

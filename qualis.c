@@ -24,6 +24,7 @@ int estrato(char *qualis){
     return 7;
   else if ( !strcmp(qualis, "C") )
     return 8;
+  else return -1;
 }
 
 

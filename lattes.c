@@ -175,17 +175,17 @@ int main (int argc, char **argv){
         optind--;
         for (;optind < argc && *argv[optind] != '-'; optind++){
           if ( !dir_count )
-            strncpy(dir1, argv[optind], FILENAME);
+            strcpy(dir1, argv[optind]);
           else
-            strncpy(dir2, argv[optind], FILENAME);
+            strcpy(dir2, argv[optind]);
           dir_count++;
         }
         break;
       case 'p':
-        strncpy(periodicos, optarg, FILENAME);
+        strcpy(periodicos, optarg);
         break;
       case 'c':
-        strncpy(conferencias, optarg, FILENAME);
+        strcpy(conferencias, optarg);
         break;
       default:
         fprintf(stderr, "Passagem incorreta de parametros\n");

@@ -71,7 +71,6 @@ nodo_ano_t *criaNodo(int ano, char *qualis, int option){
 //Insere uma conferencia(0) ou artigo(1) de maneira ordenada na lista
 int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
   nodo_ano_t *nodo;
-  nodo_ano_t *aux1, aux2;
 
   //Insere primeiro nodo na lista
   if ( a->tam == 0 ){
@@ -94,7 +93,7 @@ int insereOrdenadoListaAno(ano_t *a, int ano, char *qualis, int option){
 
     //Percorre lista
     nodo_ano_t *aux1 = a->head;
-    nodo_ano_t *aux2;
+    nodo_ano_t *aux2 = a->head;
     while ( aux1->ano < ano && aux1->prox != NULL){
       aux2 = aux1;
       aux1 = aux1->prox;
@@ -141,10 +140,10 @@ void imprimeListaAno(ano_t *a){
       printf("| Conferencias | Periodicos |\n");
       printf("+---------------------------+\n");
       for (int j=0; j<4 ;j++)
-        printf("| A%d: %-03d      | A%d: %-03d    |\n", j+1, aux->conf[j], j+1, aux->per[j]);
+        printf("| A%d: %-3d      | A%d: %-3d    |\n", j+1, aux->conf[j], j+1, aux->per[j]);
       for (int j=4; j<8 ;j++)
-        printf("| B%d: %-03d      | B%d: %-03d    |\n", j-3, aux->conf[j], j-3, aux->per[j]);
-      printf("| C : %-03d      | C : %-03d    |\n", aux->conf[8], aux->per[8]);
+        printf("| B%d: %-3d      | B%d: %-3d    |\n", j-3, aux->conf[j], j-3, aux->per[j]);
+      printf("| C : %-3d      | C : %-3d    |\n", aux->conf[8], aux->per[8]);
       printf("+---------------------------+\n");
       printf("\n");
       aux = aux->prox;

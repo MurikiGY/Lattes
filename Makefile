@@ -1,27 +1,15 @@
-CC = gcc -g 
-CCFLAGS = -Wall -O3 -std=c99     #Flags de compilação
-LDFLAGS =                       #Blibliotecas a ligar
-SOURCES = $(wildcard *.c)       #Arquivos .c
-OBJECTS = $(SOURCES: .c=.o)     #Arquivos .o
-TARGET	= lattes                #Executavel
+CC = gcc
+CFLAGS = -g -O3 -std=c99 -Wall -D_DEFAULT_SOURCE
+SRC = $(wildcard *.c)
+OBJ = $(SRC:.c=.o)
+TARGET = lattes
 
-#Regra default (primeira regra)
 all: $(TARGET)
 
+$(TARGET): $(OBJ)
 
-$(TARGET): $(OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS)
-
-%.o: %.c %.h
-	$(CC) $(CCFLAGS) -c $<
-
-%.o: %.c
-	$(CC) $(CCFLAGS) -c $<
-
-#Remove arquivos temporarios
 clean:
-	rm -f *~ *.o
+	rm -f *.o vgcore* 
 
-#Remove o que não for o codigo fonte original
-purge:
-	rm $(TARGET)
+purge: clean
+	rm -f $(TARGET)

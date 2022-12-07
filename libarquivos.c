@@ -6,9 +6,13 @@ int numberFiles (DIR *dirstream){
   int             tam = 0;    //Contador do numero de arquivos
 
   //Loop de contagem de arquivos
-  while ( entry = readdir(dirstream) )
+  entry = readdir(dirstream);
+  while ( entry ){
     if (entry->d_type == DT_REG)
       tam++;
+    entry = readdir(dirstream);
+  }
+
 
   //Retorna o ponteiro para o inicio do diretorio
   rewinddir(dirstream);
