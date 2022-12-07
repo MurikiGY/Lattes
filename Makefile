@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -O3 -std=c99 -Wall -D_DEFAULT_SOURCE
-SRC = $(wildcard *.c)
+SRC = $(wildcard libraries/*.c)
 OBJ = $(SRC:.c=.o)
 TARGET = lattes
 
@@ -9,7 +9,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 
 clean:
-	rm -f *.o vgcore* 
+	rm -f *.o vgcore* data.dat
 
 purge: clean
 	rm -f $(TARGET)

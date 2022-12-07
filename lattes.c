@@ -4,11 +4,11 @@
 #include <dirent.h>
 #include <getopt.h>
 
-#include "qualis.h"
-#include "pesquisador.h"
-#include "sumariza.h"
-#include "libarquivos.h"
-#include "libstring.h"
+#include "libraries/qualis.h"
+#include "libraries/pesquisador.h"
+#include "libraries/sumariza.h"
+#include "libraries/libarquivos.h"
+#include "libraries/libstring.h"
 
 #define FILENAME  100   //Tam do nome dos arquivos de period. e conf.
 #define DIST      4     //Parametro da distancia de edição de strings
