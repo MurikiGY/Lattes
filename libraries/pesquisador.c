@@ -14,7 +14,7 @@ void leDados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
     if ( entry->d_type == DT_REG ){
 
       char path[strlen(dir) + strlen(entry->d_name) + 2];
-      snprintf(path, strlen(dir) + strlen(entry->d_name) + 1, "%s\%s", dir, entry->d_name);
+      snprintf(path, strlen(dir) + strlen(entry->d_name) + 2, "%s/%s", dir, entry->d_name);
 
       //Leitura dos arquivos
       filestream = fopen(path, "r");
@@ -55,7 +55,7 @@ void leDados (DIR *dirstream, char *dir, curriculo_t *V_pesq, int tam_pesq){
 
         fclose(filestream);
       } else
-        fprintf(stderr, "Erro em abrir o arquivo %s", entry->d_name);
+        fprintf(stderr, "Erro em abrir o arquivo %s\n", entry->d_name);
     } //if ( entry->d_type == DT_REG )
     entry = readdir(dirstream);
   } //while ( entry )

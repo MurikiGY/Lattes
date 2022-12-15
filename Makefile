@@ -9,7 +9,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 
 clean:
-	rm -f *.o vgcore* data.dat
+	rm -f libraries/*.o vgcore* data.dat
 
 purge: clean
 	rm -f $(TARGET)
