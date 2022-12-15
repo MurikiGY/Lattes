@@ -34,7 +34,7 @@ nodo_autor_t *criaNodoAutor(char *s){
 
   nodo = malloc ( sizeof(nodo_autor_t) );
   nodo->nome = malloc( sizeof(char) * (strlen(s)+1) );
-  strncpy(nodo->nome, s, strlen(s)+1);
+  strcpy(nodo->nome, s);
   nodo->prox = NULL;
 
   return nodo;

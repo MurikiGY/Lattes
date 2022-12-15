@@ -115,7 +115,7 @@ void leNome(FILE *stream, curriculo_t *V_pesq){
     fscanf(stream, "%s", s);
   completaTag(stream, s);
   V_pesq->pesquisador = malloc(sizeof(char) * (strlen(s)+1));
-  strncpy(V_pesq->pesquisador, s, strlen(s)+1);
+  strcpy(V_pesq->pesquisador, s);
 
   free(s);
 }
@@ -131,7 +131,7 @@ void leEvento(FILE *stream, producao_t *prod, lista_autor_t *autor){
     fscanf(stream, "%s", s);
   completaTag(stream, s);
   prod->producao = malloc( sizeof(char) * (strlen(s)+1) );
-  strncpy(prod->producao, s, strlen(s)+1);
+  strcpy(prod->producao, s);
 
   //Acha o ano do evento
   fscanf(stream, "%s", s);
@@ -146,7 +146,7 @@ void leEvento(FILE *stream, producao_t *prod, lista_autor_t *autor){
     fscanf(stream, "%s", s);
   completaTag(stream, s);
   prod->titulo = malloc( sizeof(char) * (strlen(s)+1) );
-  strncpy(prod->titulo, s, strlen(s)+1);
+  strcpy(prod->titulo, s);
   strtolow(prod->titulo);
 
   //Busca co-autores
@@ -174,7 +174,7 @@ void leArtigo(FILE *stream, producao_t *prod, lista_autor_t *autor){
     fscanf(stream, "%s", s);
   completaTag(stream, s);
   prod->producao = malloc( sizeof(char) * (strlen(s)+1) );
-  strncpy(prod->producao, s, strlen(s)+1);
+  strcpy(prod->producao, s);
 
   //Acha o ano do artigo
   fscanf(stream, "%s", s);
@@ -189,7 +189,7 @@ void leArtigo(FILE *stream, producao_t *prod, lista_autor_t *autor){
     fscanf(stream, "%s", s);
   completaTag(stream, s);
   prod->titulo = malloc( sizeof(char) * (strlen(s)+1) );
-  strncpy(prod->titulo, s, strlen(s)+1);
+  strcpy(prod->titulo, s);
   strtolow(prod->titulo);
 
   //Busca co-autores

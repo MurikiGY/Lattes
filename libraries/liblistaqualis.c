@@ -44,7 +44,7 @@ int queue(lista_t *l, char *t){
     return 1;
 
   nodo->titulo = malloc( sizeof(char) * (strlen(t)+1) );
-  strncpy(nodo->titulo, t, strlen(t)+1);
+  strcpy(nodo->titulo, t);
   nodo->prox =  NULL;
   nodo->cntr = 1;
 

@@ -55,10 +55,10 @@ classe_t *leQualitativos(char *filename, int *tam){
     final[0] = '\0';
     (final)++;        //str eh o conteudo e final eh o tipo
     vetor[i].nome = malloc( sizeof(char) * (strlen(str)+1));
-    strncpy(vetor[i].nome, str, strlen(str)+1);
+    strcpy(vetor[i].nome, str);
     strtolow(vetor[i].nome);
     vetor[i].tipo = malloc( sizeof(char) * (strlen(final)+1));
-    strncpy(vetor[i].tipo, final, strlen(final)+1);
+    strcpy(vetor[i].tipo, final);
     i++;
   }
 
